@@ -1,0 +1,148 @@
+/* =========================================================
+   河海水纹交互层：光标涟漪 / 按钮水波纹 / 横向栏目边缘滚动
+   （独立文件，便于与主题样式分开维护）
+   ========================================================= */
+
+/* ---------- 1. 光标涟漪画布 ---------- */
+.ripple-layer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 58;
+  pointer-events: none;
+  opacity: .9;
+}
+
+/* ---------- 2. 按钮 / 链接的水波纹质感 ---------- */
+.water-btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.water-btn::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 170%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(255, 244, 214, .2) 0 30%,
+    rgba(201, 160, 106, .14) 45%,
+    transparent 66%);
+  transform: translate(-50%, -50%) scale(.2);
+  opacity: 0;
+  transition: transform .9s var(--ease), opacity .9s var(--ease);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.water-btn:hover::after,
+.water-btn:focus-visible::after {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* 点击时从指针位置荡开的一圈水纹（JS 注入 span） */
+.water-btn .btn-ripple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  border: 1px solid rgba(201, 160, 106, .55);
+  transform: translate(-50%, -50%) scale(.1);
+  animation: btnRipple .85s cubic-bezier(.2, .7, .3, 1) forwards;
+  z-index: 0;
+}
+
+@keyframes btnRipple {
+  0% { opacity: .65; transform: translate(-50%, -50%) scale(.1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* 圆形图标按钮：常态就带一点水纹环 */
+.rail-arrow {
+  position: relative;
+  overflow: hidden;
+}
+.rail-arrow::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  opacity: 0;
+  transform: scale(.4);
+  transition: opacity .5s var(--ease), transform .9s var(--ease);
+  pointer-events: none;
+}
+.rail-arrow:hover::after { opacity: .28; transform: scale(1); }
+
+/* ---------- 3. 横向栏目：左右边缘悬停滚动提示 ---------- */
+.rail-wrap { position: relative; }
+
+.rail-wrap::before,
+.rail-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(40px, 6vw, 96px);
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .4s var(--ease);
+}
+
+.rail-wrap::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--edge-from, rgba(5, 15, 23, .9)), transparent);
+}
+.rail-wrap::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--edge-from, rgba(5, 15, 23, .9)), transparent);
+}
+
+.rail-wrap.is-hovering.is-at-left::before,
+.rail-wrap.is-hovering.is-at-right::after,
+.rail-wrap.is-hovering.is-mid-left::before,
+.rail-wrap.is-hovering.is-mid-right::after {
+  opacity: 1;
+}
+
+/* 边缘滚动时显示的方向箭头 */
+.edge-cue {
+  position: absolute;
+  top: 50%;
+  z-index: 7;
+  width: 38px;
+  height: 38px;
+  margin-top: -19px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(241, 234, 220, .3);
+  color: rgba(241, 234, 220, .85);
+  font-size: 15px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .35s var(--ease), transform .35s var(--ease);
+  pointer-events: none;
+}
+
+.edge-cue--left { left: clamp(10px, 2vw, 26px); }
+.edge-cue--right { right: clamp(10px, 2vw, 26px); }
+
+.rail-wrap.is-mid-left .edge-cue--left,
+.rail-wrap.is-at-left .edge-cue--left { opacity: .9; transform: translateY(0); }
+.rail-wrap.is-mid-right .edge-cue--right,
+.rail-wrap.is-at-right .edge-cue--right { opacity: .9; transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .water-btn::after,
+  .rail-arrow::after { transition-duration: .01ms; }
+  .water-btn .btn-ripple { animation-duration: .01ms; }
+  .ripple-layer { display: none; }
+}
