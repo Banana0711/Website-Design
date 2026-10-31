@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>河海大学 · 百十河海，向海而生</title>
+<meta name="description" content="来『字』于河海，新『页』加AI。以淮河溯源为叙事主线，用一条河的旅程，讲述河海大学百十年的来路与去向。">
+<meta name="theme-color" content="#06131c">
+<link rel="icon" href="assets/img/emblem.png" type="image/png">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/ripple-ui.css">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="site-head" id="siteHead">
+  <a class="brand" href="#intro" data-home aria-label="河海大学 首页">
+    <img class="brand-seal" src="assets/img/emblem-white.png" alt="" aria-hidden="true">
+    <img class="brand-lockup" src="assets/img/lockup-white.png" alt="河海大学 HOHAI UNIVERSITY">
+  </a>
+
+  <nav class="site-nav" id="siteNav" aria-label="主导航">
+    <a href="#intro" data-nav="intro" data-home>首页</a>
+    <a href="#journey" data-nav="journey">溯流</a>
+    <a href="#journey" data-nav="history">校史</a>
+    <a href="#panels" data-nav="culture" data-panel="1">文化</a>
+    <a href="#panels" data-nav="people" data-panel="2">人物</a>
+    <a href="#panels" data-nav="alumni" data-panel="3">校友</a>
+    <a href="#panels" data-nav="map" data-panel="4">地图</a>
+    <a href="#panels" data-nav="guestbook" data-panel="5">留言</a>
+  </nav>
+
+  <button class="nav-toggle" id="navToggle" aria-label="打开导航" aria-expanded="false">
+    <span></span><span></span>
+  </button>
+</header>
+
+<main>
+
+  <!-- ============ 开屏：牛皮纸打稿 → 仿3D立起 → 水中晕开 ============ -->
+  <section class="intro" id="intro" aria-label="开屏">
+    <div class="intro-paper" aria-hidden="true"></div>
+    <div class="intro-media" aria-hidden="true">
+      <img class="intro-photo intro-photo--model" src="assets/img/gate.jpg" alt="">
+      <div class="intro-blueprint"></div>
+      <div class="intro-water"><img src="assets/img/gate.jpg" alt="河海大学校门"></div>
+      <div class="intro-grade"></div>
+    </div>
+    <img class="intro-sketch" src="assets/img/gate-draft.jpg" alt="">
+    <span class="intro-pen" aria-hidden="true"></span>
+    <div class="intro-clouds" aria-hidden="true">
+      <i></i><i></i><i></i>
+    </div>
+    <div class="intro-ripples" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+
+    <div class="intro-copy">
+      <h1 class="intro-wordmark">HOHAI UNIVERSITY</h1>
+    </div>
+
+    <div class="intro-foot">
+      <a class="scroll-cue" href="#journey" aria-label="向下滚动，开始溯源">
+        <span class="cue-line" aria-hidden="true"></span>
+        <span class="cue-text">向下，溯流而上</span>
+      </a>
+      <p class="intro-meta">01 / 04 · 溯源</p>
+    </div>
+  </section>
+
+  <!-- ============ 淮河溯源：滚动叙事 ============ -->
+  <section class="journey" id="journey" aria-label="淮河溯源叙事">
+    <div class="journey-sticky">
+
+      <div class="scene-stack" aria-hidden="true">
+        <div class="scene is-on" data-scene="0" style="background-image:url('assets/img/scene-source.jpg')"></div>
+        <div class="scene" data-scene="1" style="background-image:url('assets/img/scene-mountain.jpg')"></div>
+        <div class="scene" data-scene="2" style="background-image:url('assets/img/scene-town.jpg')"></div>
+        <div class="scene" data-scene="3" style="background-image:url('assets/img/scene-delta.jpg')"></div>
+        <div class="scene" data-scene="4" style="background-image:url('assets/img/sea.jpg')"></div>
+      </div>
+
+      <canvas id="water" class="water" aria-hidden="true"></canvas>
+      <div class="journey-vignette" aria-hidden="true"></div>
+
+      <div class="chapter-mark" aria-hidden="true">
+        <span class="chapter-cn">淮河溯源</span>
+        <span class="chapter-en">TRACING THE HUAIHE</span>
+      </div>
+
+      <div class="scene-copies" id="sceneCopies">
+        <article class="scene-copy is-on" data-copy="0">
+          <p class="eyebrow">源起 · 1915</p>
+          <h2 data-split>一滴水，<br>从太白顶出发</h2>
+          <p class="lede" data-split data-split-delay="220">淮河发源于桐柏山太白顶。山脊上的一线清泉，穿过云雾，向东北流去。</p>
+          <p class="note">1915 年，张謇等创办河海工程专门学校。中国水利高等教育，也从这里发源。</p>
+        </article>
+
+        <article class="scene-copy" data-copy="1">
+          <p class="eyebrow">奔流 · 1924</p>
+          <h2 data-split>河出伏流，<br>一泻千里</h2>
+          <p class="lede" data-split data-split-delay="220">水穿过山谷，汇入支流。一条河真正成为一条河，是在它学会汇聚之后。</p>
+          <p class="note">1924 年，学校改名为河海工科大学，成为中国第一所培养水利人才的高等工科大学。</p>
+        </article>
+
+        <article class="scene-copy" data-copy="2">
+          <p class="eyebrow">汇流 · 1928</p>
+          <h2 data-split>大江大河，<br>各有其源</h2>
+          <p class="lede" data-split data-split-delay="220">河到了城下，速度慢下来。它开始记住岸边的灯，和灯下的人。</p>
+          <p class="note">1928 年，学校并入国立中央大学并设水利系。水利教育的血脉，在综合大学里继续奔流。</p>
+        </article>
+
+        <article class="scene-copy" data-copy="3">
+          <p class="eyebrow">汇聚 · 1952</p>
+          <h2 data-split>百川归海，<br>支流成主流</h2>
+          <p class="lede" data-split data-split-delay="220">河汊散开，芦苇起伏。淡水与咸水相遇的地方，是所有支流重新汇合的地方。</p>
+          <p class="note">1952 年全国院系调整，多所高校水利系汇聚南京，华东水利学院由此成立。</p>
+        </article>
+
+        <article class="scene-copy" data-copy="4">
+          <p class="eyebrow">向海 · 1985</p>
+          <h2 data-split>以水为名，<br>向海而生</h2>
+          <p class="lede" data-split data-split-delay="220">一滴水只有汇入大海，才知道自己原来可以这么大。</p>
+          <p class="note">1985 年，恢复河海大学校名。从专门学校到综合性水利大学，七十年走成一条河。</p>
+        </article>
+      </div>
+
+      <div class="year-ghost" id="yearGhost" aria-hidden="true">1915</div>
+
+      <aside class="journey-rail" aria-hidden="true">
+        <span class="rail-title">CHAPTER</span>
+        <div class="rail-track">
+          <i class="rail-fill" id="railFill"></i>
+          <span class="rail-dot is-on" data-dot="0"></span>
+          <span class="rail-dot" data-dot="1"></span>
+          <span class="rail-dot" data-dot="2"></span>
+          <span class="rail-dot" data-dot="3"></span>
+          <span class="rail-dot" data-dot="4"></span>
+        </div>
+        <div class="rail-years">
+          <span data-year="0">1915</span>
+          <span data-year="1">1924</span>
+          <span data-year="2">1928</span>
+          <span data-year="3">1952</span>
+          <span data-year="4">1985</span>
+        </div>
+      </aside>
+
+      <div class="journey-hint" aria-hidden="true">
+        <span>继续向下 · 顺流而下</span>
+        <i></i>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ 溯流尾声：2017 / 2025 ============ -->
+  <section class="journey-coda" id="coda" aria-label="溯流尾声">
+    <span class="section-word" aria-hidden="true">Coda</span>
+    <div class="coda-inner reveal">
+      <p class="section-kicker">CODA · 尾声</p>
+      <h2 data-split>从 1915 到 2025，<br><em>一条河仍在向前。</em></h2>
+      <ol class="coda-list">
+        <li>
+          <span class="coda-year">2017</span>
+          <div>
+            <h3>入选“双一流”</h3>
+            <p>水利工程、环境科学与工程进入国家一流学科建设序列。</p>
+          </div>
+        </li>
+        <li class="is-now">
+          <span class="coda-year">2025</span>
+          <div>
+            <h3>百十华诞</h3>
+            <p>从一滴水，到一条奔涌向海的河。</p>
+          </div>
+        </li>
+      </ol>
+      <a class="coda-link" href="detail.html?section=history">展开百年校史 <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <!-- ============ 入海 ============ -->
+  <section class="ocean" id="ocean" aria-label="入海">
+    <span class="section-word" aria-hidden="true">The Sea</span>
+    <div class="ocean-bg" aria-hidden="true"></div>
+    <div class="ocean-copy reveal">
+      <p class="ocean-kicker">THE RIVER MEETS THE SEA</p>
+      <h2 data-split>所有的河流<br><em>终将入海</em></h2>
+      <p class="ocean-desc">110 年，河海把一条河的旅程，走成了自己的年轮。<br>而故事，才刚刚流到开阔处。</p>
+      <a class="ocean-cta btn-duo" href="#panels">
+        <span class="duo">
+          <span class="duo-a">顺流而下，进入河海</span>
+          <span class="duo-b" aria-hidden="true">顺流而下，进入河海</span>
+        </span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v14M6 12l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+      </a>
+    </div>
+    <div class="ocean-foot" aria-hidden="true">02 / 04 · 入海</div>
+  </section>
+
+  <!-- ============ 五章 ============ -->
+  <section class="panels" id="panels" aria-label="河海五章">
+    <span class="section-word" aria-hidden="true">Chapters</span>
+    <div class="panels-head reveal">
+      <div>
+        <p class="section-kicker">FIVE CHAPTERS · 河海五章</p>
+        <h2 data-split>顺流而下，<br>读五段河海。</h2>
+      </div>
+      <div class="panels-side">
+        <p>横向拖拽，或使用方向键。<br>每一块，都是这条河的一段河床。</p>
+        <div class="rail-arrows">
+          <button class="rail-arrow" id="railPrev" aria-label="上一块">←</button>
+          <button class="rail-arrow" id="railNext" aria-label="下一块">→</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="rail-wrap" id="railWrap">
+      <span class="edge-cue edge-cue--left" aria-hidden="true">←</span>
+      <span class="edge-cue edge-cue--right" aria-hidden="true">→</span>
+      <div class="rail" id="rail" tabindex="0" aria-label="河海五章横向浏览">
+
+        <!-- 00 索引 -->
+        <article class="panel panel-index" data-index="0">
+          <div class="panel-inner">
+            <p class="panel-kicker">INDEX · 00</p>
+            <h2 class="index-title">五章</h2>
+            <ol class="index-list">
+              <li><a href="#panels" data-goto="1"><span>01</span>河海文化<em>水教给我们的</em></a></li>
+              <li><a href="#panels" data-goto="2"><span>02</span>人物<em>把一生交给水的人</em></a></li>
+              <li><a href="#panels" data-goto="3"><span>03</span>校友<em>散作满天星</em></a></li>
+              <li><a href="#panels" data-goto="4"><span>04</span>校园地图<em>三座校园，一张水网</em></a></li>
+              <li><a href="#panels" data-goto="5"><span>05</span>留言<em>把话留给河海</em></a></li>
+            </ol>
+            <p class="index-hint">横向拖拽 <span aria-hidden="true">→</span></p>
+          </div>
+        </article>
+
+        <!-- 01 文化 -->
+        <article class="panel panel-culture" data-index="1">
+          <div class="panel-inner">
+            <header class="panel-head">
+              <span class="panel-no">01</span>
+              <div>
+                <p class="panel-kicker">CULTURE · 文化</p>
+                <h2>水教给我们的</h2>
+              </div>
+            </header>
+
+            <div class="motto">
+              <p class="motto-line">艰苦朴素</p>
+              <p class="motto-line">实事求是</p>
+              <p class="motto-line">严格要求</p>
+              <p class="motto-line">勇于探索</p>
+              <span class="motto-en">MOTTO · 校训</span>
+            </div>
+
+            <div class="culture-grid">
+              <div class="culture-card">
+                <span class="cc-no">水之德</span>
+                <h3>上善若水</h3>
+                <p>水利万物而不争。学会做水，是河海人的第一课。</p>
+              </div>
+              <div class="culture-card">
+                <span class="cc-no">水之志</span>
+                <h3>向海而生</h3>
+                <p>不恋一时平缓，始终朝更开阔的地方去。</p>
+              </div>
+              <div class="culture-card">
+                <span class="cc-no">水之恒</span>
+                <h3>滴水穿石</h3>
+                <p>治水是百年的事。河海人习惯把目光放得很长。</p>
+              </div>
+            </div>
+
+            <p class="culture-spirit">校风 · <em>献身　求实　负责</em></p>
+
+            <footer class="panel-foot">
+              <a href="detail.html?section=culture">读河海文化 <span aria-hidden="true">→</span></a>
+            </footer>
+          </div>
+        </article>
+
+        <!-- 02 人物 -->
+        <article class="panel panel-people" data-index="2">
+          <div class="panel-inner">
+            <header class="panel-head">
+              <span class="panel-no">02</span>
+              <div>
+                <p class="panel-kicker">PEOPLE · 人物</p>
+                <h2>把一生交给水的人</h2>
+              </div>
+            </header>
+
+            <div class="people-grid">
+              <article class="person">
+                <span class="person-ghost" aria-hidden="true">张</span>
+                <p class="person-life">1853 — 1926</p>
+                <h3>张謇</h3>
+                <p class="person-role">实业家 · 教育家 · 创办者</p>
+                <p>1915 年创办河海工程专门学校，开中国水利高等教育之先河。</p>
+              </article>
+              <article class="person">
+                <span class="person-ghost" aria-hidden="true">严</span>
+                <p class="person-life">1912 — 2006</p>
+                <h3>严恺</h3>
+                <p class="person-role">水利工程学家 · 两院院士</p>
+                <p>河海大学名誉校长。把一生交给江河，也把严谨留给后来者。</p>
+              </article>
+              <article class="person">
+                <span class="person-ghost" aria-hidden="true">徐</span>
+                <p class="person-life">1911 — 2001</p>
+                <h3>徐芝纶</h3>
+                <p class="person-role">力学家 · 中国科学院院士</p>
+                <p>中国弹性力学与有限元研究的奠基者之一，著有《弹性力学》。</p>
+              </article>
+              <article class="person">
+                <span class="person-ghost" aria-hidden="true">张</span>
+                <p class="person-life">1900 — 1976</p>
+                <h3>张闻天</h3>
+                <p class="person-role">河海校友 · 革命家</p>
+                <p>1917 年入河海工程专门学校。从这里出发，走向更广阔的中国。</p>
+              </article>
+            </div>
+
+            <footer class="panel-foot">
+              <a href="detail.html?section=people">走近河海人物 <span aria-hidden="true">→</span></a>
+            </footer>
+          </div>
+        </article>
+
+        <!-- 03 校友 -->
+        <article class="panel panel-alumni" data-index="3">
+          <div class="panel-inner">
+            <header class="panel-head">
+              <span class="panel-no">03</span>
+              <div>
+                <p class="panel-kicker">ALUMNI · 校友</p>
+                <h2>散作满天星</h2>
+              </div>
+            </header>
+
+            <div class="alumni-stats">
+              <div><strong>110</strong><span>年办学</span></div>
+              <div><strong>30万<sup>+</sup></strong><span>毕业生</span></div>
+              <div><strong>30<sup>余</sup></strong><span>位两院院士</span></div>
+            </div>
+
+            <div class="alumni-list">
+              <article>
+                <h3>沈珠江</h3>
+                <p class="alumni-field">岩土工程 · 中国科学院院士</p>
+                <p>把土力学写进中国大地，参与多项重大水利与土木工程。</p>
+              </article>
+              <article>
+                <h3>张建云</h3>
+                <p class="alumni-field">水文水资源 · 中国工程院院士</p>
+                <p>长期从事水文预报与水资源研究，守护江河安澜。</p>
+              </article>
+              <article>
+                <h3>钮新强</h3>
+                <p class="alumni-field">水利工程设计 · 中国工程院院士</p>
+                <p>三峡、南水北调等国家重大工程的设计者与建设者。</p>
+              </article>
+            </div>
+
+            <p class="alumni-line">他们从西康路出发，把“河海”两个字，写进了中国的江河湖海。</p>
+
+            <footer class="panel-foot">
+              <a href="detail.html?section=alumni">更多校友故事 <span aria-hidden="true">→</span></a>
+            </footer>
+          </div>
+        </article>
+
+        <!-- 04 地图 -->
+        <article class="panel panel-map" data-index="4">
+          <div class="panel-inner">
+            <header class="panel-head">
+              <span class="panel-no">04</span>
+              <div>
+                <p class="panel-kicker">CAMPUS · 地图</p>
+                <h2>三座校园，一张水网</h2>
+              </div>
+            </header>
+
+            <div class="map-grid">
+              <div class="map-canvas" aria-label="校园交互地图">
+                <svg class="map-svg" viewBox="0 0 640 420" role="img" aria-label="河海大学校园分布示意图">
+                  <defs>
+                    <linearGradient id="riverGrad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0" stop-color="#2f7f92" stop-opacity=".55"/>
+                      <stop offset="1" stop-color="#0d2a3a" stop-opacity=".9"/>
+                    </linearGradient>
+                  </defs>
+                  <path class="map-river" d="M-20 120 C 120 90, 150 210, 260 210 S 420 120, 520 170 S 620 260, 680 240" fill="none" stroke="url(#riverGrad)" stroke-width="34" stroke-linecap="round"/>
+                  <path class="map-river-thin" d="M-20 120 C 120 90, 150 210, 260 210 S 420 120, 520 170 S 620 260, 680 240" fill="none" stroke="#7ec8d6" stroke-width="1.2" opacity=".5"/>
+                  <g class="map-roads" stroke="#8fb6c2" stroke-width=".8" opacity=".28" fill="none">
+                    <path d="M60 40 L580 380"/><path d="M120 380 L560 40"/><path d="M40 300 L600 300"/>
+                    <path d="M320 20 L320 400"/><path d="M160 20 L160 400"/><path d="M480 20 L480 400"/>
+                  </g>
+                  <g class="map-rings" fill="none" stroke="#8fb6c2" stroke-width=".6" opacity=".18">
+                    <circle cx="210" cy="220" r="46"/><circle cx="210" cy="220" r="86"/>
+                    <circle cx="470" cy="120" r="40"/><circle cx="470" cy="120" r="76"/>
+                    <circle cx="330" cy="340" r="34"/><circle cx="330" cy="340" r="68"/>
+                  </g>
+                  <text x="470" y="330" class="map-label" opacity=".36">长江</text>
+                  <text x="60" y="70" class="map-label" opacity=".22">N</text>
+                </svg>
+
+                <button class="map-pin is-active" data-campus="0" style="left:32.8%;top:52.4%" aria-label="西康路校区">
+                  <i></i><span>西康路</span>
+                </button>
+                <button class="map-pin" data-campus="1" style="left:73.4%;top:28.6%" aria-label="江宁校区">
+                  <i></i><span>江宁</span>
+                </button>
+                <button class="map-pin" data-campus="2" style="left:51.6%;top:81%" aria-label="常州校区">
+                  <i></i><span>常州</span>
+                </button>
+              </div>
+
+              <div class="campus-card" id="campusCard">
+                <div class="campus-photo">
+                  <img id="campusImg" src="assets/img/campus-gate.jpg" alt="西康路校区">
+                </div>
+                <div class="campus-copy">
+                  <p class="campus-no" id="campusNo">CAMPUS 01</p>
+                  <h3 id="campusName">西康路校区</h3>
+                  <p class="campus-loc" id="campusLoc">南京 · 鼓楼 · 西康路 1 号</p>
+                  <p id="campusDesc">百年的起点。校门、水利馆与梧桐，把河海的时间折叠在这一条路上。</p>
+                  <p class="campus-tag" id="campusTag">百年主校区 · 校史原点</p>
+                </div>
+              </div>
+            </div>
+
+            <footer class="panel-foot">
+              <span class="foot-note">点击地图上的光点，切换校区</span>
+            </footer>
+          </div>
+        </article>
+
+        <!-- 05 留言 -->
+        <article class="panel panel-guestbook" data-index="5">
+          <div class="panel-inner">
+            <header class="panel-head">
+              <span class="panel-no">05</span>
+              <div>
+                <p class="panel-kicker">GUESTBOOK · 留言</p>
+                <h2>把话留给河海</h2>
+              </div>
+            </header>
+
+            <div class="guest-grid">
+              <form class="guest-form" id="guestForm" autocomplete="off">
+                <label class="field">
+                  <span>你的名字</span>
+                  <input id="guestName" name="name" type="text" maxlength="12" placeholder="一位水之子" required>
+                </label>
+                <label class="field">
+                  <span>想说的话 <em id="charCount">0 / 60</em></span>
+                  <textarea id="guestText" name="text" maxlength="60" rows="3" placeholder="写下你与河海的一滴水……" required></textarea>
+                </label>
+                <button class="btn-send btn-duo" type="submit">
+                  <span class="duo">
+                    <span class="duo-a">投入河中</span>
+                    <span class="duo-b" aria-hidden="true">投入河中</span>
+                  </span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+                </button>
+                <p class="form-note">留言保存在本机浏览器中，仅用于赛事演示。</p>
+              </form>
+
+              <div class="guest-stream">
+                <div class="stream-head">
+                  <span>最近的漂流瓶</span>
+                  <i></i>
+                  <span id="guestCount">0 条</span>
+                </div>
+                <ul class="guest-list" id="guestList"></ul>
+              </div>
+            </div>
+
+            <footer class="panel-foot">
+              <span class="foot-note">伪后端 · localStorage 持久化</span>
+            </footer>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <div class="rail-progress" aria-hidden="true">
+      <i id="railProgress"></i>
+      <span id="railIndex">00 / 05</span>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <svg class="foot-waves" viewBox="0 0 1440 150" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 42 C 240 10, 430 74, 720 48 S 1200 14, 1440 46"/>
+    <path d="M0 80 C 260 42, 480 110, 760 84 S 1220 52, 1440 86"/>
+    <path d="M0 120 C 280 80, 500 144, 780 118 S 1240 90, 1440 124"/>
+  </svg>
+  <div class="foot-top">
+    <div class="foot-brand">
+      <p class="foot-word">河海大学</p>
+      <p class="foot-en">HOHAI UNIVERSITY · 1915—2025</p>
+      <p class="foot-note">来“字”于河海，新“页”加AI · 网页设计大赛作品</p>
+    </div>
+    <nav class="foot-nav" aria-label="页脚快速导航">
+      <a href="#intro">回到源头</a>
+      <a href="#journey">淮河溯源</a>
+      <a href="#journey">校史</a>
+      <a href="#panels" data-foot-goto="1">文化</a>
+      <a href="#panels" data-foot-goto="2">人物</a>
+      <a href="#panels" data-foot-goto="3">校友</a>
+      <a href="#panels" data-foot-goto="4">地图</a>
+      <a href="#panels" data-foot-goto="5">留言</a>
+    </nav>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 河海大学网页设计大赛参赛作品</span>
+    <span>视觉素材由 AI 生成 · 内容仅用于赛事演示</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/js/water.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
