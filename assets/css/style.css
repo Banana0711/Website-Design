@@ -396,7 +396,7 @@ body.is-drawn:not(.is-solid) .cue-line {
   background: linear-gradient(to bottom, rgba(24, 32, 30, .05), rgba(24, 32, 30, .55));
 }
 
-/* 校门天空：循环飘动的白云（一直播放） */
+/* 校门天空：循环飘动的写实白云（一直播放；screen 混合让黑底素材融入天空） */
 .intro-clouds {
   position: absolute;
   left: 0; right: 0; top: 0;
@@ -406,6 +406,7 @@ body.is-drawn:not(.is-solid) .cue-line {
   overflow: hidden;
   opacity: 0;
   transition: opacity 2s var(--ease);
+  mix-blend-mode: screen;
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, rgba(0, 0, 0, .5) 66%, transparent 94%);
   mask-image: linear-gradient(to bottom, #000 0%, #000 42%, rgba(0, 0, 0, .5) 66%, transparent 94%);
   will-change: opacity;
@@ -417,32 +418,33 @@ body.is-solid .intro-clouds { opacity: 1; }
   left: 0;
   display: block;
   background-repeat: no-repeat;
-  background-size: contain;
-  background-position: left center;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 200'%3E%3Cdefs%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='1.8'/%3E%3C/filter%3E%3C/defs%3E%3Cg filter='url(%23b)' fill='%23ffffff'%3E%3Ccircle cx='118' cy='140' r='56'/%3E%3Ccircle cx='188' cy='108' r='70'/%3E%3Ccircle cx='286' cy='90' r='84'/%3E%3Ccircle cx='382' cy='112' r='72'/%3E%3Ccircle cx='462' cy='142' r='50'/%3E%3Crect x='86' y='138' width='430' height='44' rx='22'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: center;
+  background-image: url("../img/cloud-real.jpg");
+  mix-blend-mode: screen;
   animation-name: cloudDrift;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   will-change: transform;
 }
 .intro-clouds i:nth-child(1) {
-  top: -3%;
-  width: 34vmax; height: 11.4vmax;
-  opacity: .5;
+  top: 0;
+  width: 72vmax; height: 28vmax;
+  opacity: .9;
   animation-duration: 132s;
   animation-delay: -24s;
 }
 .intro-clouds i:nth-child(2) {
-  top: 7%;
-  width: 45vmax; height: 15vmax;
-  opacity: .34;
+  top: 2%;
+  width: 80vmax; height: 30vmax;
+  opacity: .6;
   animation-duration: 186s;
   animation-delay: -96s;
 }
 .intro-clouds i:nth-child(3) {
   top: 16%;
-  width: 24vmax; height: 8vmax;
-  opacity: .26;
+  width: 52vmax; height: 20vmax;
+  opacity: .45;
   animation-duration: 104s;
   animation-delay: -58s;
 }
