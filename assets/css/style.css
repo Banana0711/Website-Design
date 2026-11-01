@@ -112,7 +112,7 @@ ol, ul { padding: 0; list-style: none; }
 }
 
 /* =========================================================
-   顶部导航：悬浮玻璃胶囊（Belgrade Arbor 浮岛导航）
+   顶部导航：悬浮河海蓝胶囊（Belgrade Arbor 浮岛导航）
    ========================================================= */
 
 .site-head {
@@ -128,12 +128,12 @@ ol, ul { padding: 0; list-style: none; }
   gap: 18px;
   height: 58px;
   padding: 0 14px 0 18px;
-  background: var(--glass);
+  background: rgba(0, 120, 191, .88); /* 河海蓝 #0078BF */
   backdrop-filter: blur(16px) saturate(1.1);
   -webkit-backdrop-filter: blur(16px) saturate(1.1);
-  border: 1px solid rgba(166, 129, 80, .3);
+  border: 1px solid rgba(255, 255, 255, .24);
   border-radius: var(--r-pill);
-  box-shadow: 0 24px 60px -34px rgba(2, 10, 16, .85);
+  box-shadow: 0 24px 60px -34px rgba(0, 42, 74, .85);
   transition: background .5s var(--ease), border-color .5s var(--ease), height .5s var(--ease), top .5s var(--ease);
 }
 
@@ -142,8 +142,8 @@ ol, ul { padding: 0; list-style: none; }
 .site-head.is-scrolled {
   top: 8px;
   height: 52px;
-  background: rgba(6, 20, 30, .86);
-  border-color: rgba(166, 129, 80, .46);
+  background: rgba(0, 102, 166, .93);
+  border-color: rgba(255, 255, 255, .32);
 }
 .site-head.is-scrolled::before { opacity: 0; }
 
@@ -155,7 +155,7 @@ ol, ul { padding: 0; list-style: none; }
   gap: 10px;
   flex: 0 0 auto;
   padding-right: 16px;
-  border-right: 1px solid rgba(166, 129, 80, .28);
+  border-right: 1px solid rgba(255, 255, 255, .26);
 }
 
 .brand-seal {
@@ -188,7 +188,7 @@ ol, ul { padding: 0; list-style: none; }
   font-family: var(--ui);
   font-size: 13px;
   letter-spacing: .1em;
-  color: rgba(255, 244, 214, .74);
+  color: rgba(255, 255, 255, .85);
   padding: 5px 0;
   transition: color .35s;
 }
@@ -197,12 +197,12 @@ ol, ul { padding: 0; list-style: none; }
   position: absolute;
   left: 0; bottom: 0;
   width: 100%; height: 1px;
-  background: var(--golden-bright);
+  background: #BFE6F8;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform .45s var(--ease);
 }
-.site-nav a:hover, .site-nav a.is-active { color: var(--cream); }
+.site-nav a:hover, .site-nav a.is-active { color: #fff; }
 .site-nav a:hover::after, .site-nav a.is-active::after { transform: scaleX(1); }
 
 .nav-toggle {
@@ -219,292 +219,338 @@ ol, ul { padding: 0; list-style: none; }
   display: block;
   height: 1px;
   width: 24px;
-  background: var(--paper);
+  background: #fff;
   transition: transform .4s var(--ease), width .4s;
 }
 .nav-toggle[aria-expanded="true"] span:first-child { transform: translateY(3.5px) rotate(45deg); }
 .nav-toggle[aria-expanded="true"] span:last-child { transform: translateY(-3.5px) rotate(-45deg); }
 
 /* =========================================================
-   开屏
+   开屏：铅笔稿（自校门中心向两侧铺开 + 相机升起拉远）
+         → 白色浮雕渐显 → 水墨晕开 → 活的封面
+   ---------------------------------------------------------
+   相机舞台：所有图层共用 2549:1383 的取景框（stage-fit），
+   校门抠图 / 白浮雕 / 广场水纹位置一一对应，随校门同步缩放。
    ========================================================= */
 
 .intro {
   position: relative;
   height: 100svh;
-  min-height: 620px;
+  min-height: 560px;
   overflow: hidden;
   isolation: isolate;
-  background: #d9c3a1;
+  background: #e6d9bd;
+  cursor: default;
 }
 
-/* 牛皮纸底：纸张纤维 + 四角压暗 */
-.intro-paper {
+/* ---------- 相机：推近 → 升起拉远 ---------- */
+
+.stage-zoom {
+  position: absolute; inset: 0;
+  z-index: 1;
+  transform-origin: 50% 47%;
+  will-change: transform;
+  transition: transform var(--draw-t, 5.2s) var(--draw-ease, cubic-bezier(.45, .05, .2, 1));
+}
+/* JS 接管：开场推近校门中部（相机在门下近处） */
+html.js .stage-zoom { transform: scale(2.62) translateY(-1.6%); }
+/* 铅笔稿铺开的同时，相机缓缓升起、远离：底图逐渐变小 */
+body.is-drawn .stage-zoom,
+html:not(.js) .stage-zoom { transform: scale(1) translateY(0); }
+
+/* 视差微动（终章活体感） */
+.stage-par { position: absolute; inset: 0; will-change: transform; }
+
+/* ---------- 取景框：所有图层共用同一几何 ---------- */
+
+.stage-fit {
+  position: absolute; left: 50%; top: 50%;
+  --ar: 1.8432; /* 2549 / 1383 */
+  width: max(100vw, calc(100svh * var(--ar)));
+  height: calc(max(100vw, calc(100svh * var(--ar))) / var(--ar));
+  transform: translate(-50%, -50%);
+}
+
+/* ---------- 终章：天空 + 云层 + 校门（云层之上）+ 广场水纹 ---------- */
+
+.era-final {
+  position: absolute; inset: 0;
+  opacity: 1;
+}
+html.js .era-final {
+  opacity: 0;
+  transform: scale(1.045);
+}
+body.is-watered .era-final {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 2.2s cubic-bezier(.45, .05, .35, 1) 2.6s, transform 4s cubic-bezier(.45, .05, .35, 1) 2.6s;
+}
+
+.sky {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg,
+    #5E9BE4 0%, #7FADEC 24%, #93BAEF 44%,
+    #AECBF2 62%, #D3E2F3 80%, #E9EFF5 100%);
+}
+.sky-glow {
   position: absolute; inset: 0;
   background:
-    radial-gradient(120% 90% at 50% 42%, #edddc2 0%, #ddc8a6 58%, #c6ab86 100%);
+    radial-gradient(52% 42% at 78% 8%, rgba(255, 246, 214, .55) 0%, rgba(255, 246, 214, 0) 100%),
+    radial-gradient(120% 46% at 50% 104%, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, 0) 70%);
 }
-.intro-paper::after {
+
+/* 飘动的云：位于校门图层之下 */
+.clouds {
+  position: absolute; inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.clouds img {
+  position: absolute;
+  left: 0;
+  top: var(--ct, 8%);
+  width: var(--cw, 30vmax);
+  height: auto;
+  opacity: var(--co, .6);
+  animation: cloudDrift var(--cd, 160s) linear var(--cdl, 0s) infinite;
+  will-change: transform;
+}
+@keyframes cloudDrift {
+  0% { transform: translate3d(-115%, 0, 0); }
+  100% { transform: translate3d(175%, 0, 0); }
+}
+
+/* 校门抠图：压在云层之上 */
+.gate-cutout {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  filter: drop-shadow(0 1.4vmin 2.6vmin rgba(8, 30, 52, .3));
+  animation: gateFloat 13s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes gateFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-.4%); }
+}
+
+/* 广场水光底色（水纹画布之下的一层润泽） */
+.plaza-sheen {
+  position: absolute; left: 0; right: 0; top: 84%; height: 16%;
+  background: linear-gradient(180deg,
+    rgba(150, 208, 238, .04) 0%, rgba(130, 196, 232, .14) 42%,
+    rgba(105, 180, 220, .2) 100%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* 水波纹画布：覆盖绿幕标记的广场区域（y 86% → 100%） */
+.plaza-ripples {
+  position: absolute; left: 0; top: 85.2%;
+  width: 100%; height: 14.8%;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 100%);
+}
+
+/* ---------- 草稿：牛皮纸 + 铅笔稿 + 白色浮雕 ---------- */
+
+.era-draft {
+  position: absolute; inset: 0;
+  opacity: 0;
+}
+html.js .era-draft { opacity: 1; }
+body.is-watered .era-draft {
+  opacity: 0;
+  transition: opacity 1.4s ease 2.4s;
+}
+
+.paper {
+  position: absolute; inset: 0;
+  background: radial-gradient(120% 90% at 50% 42%, #f2e9d4 0%, #e7dabb 58%, #d2bd96 100%);
+}
+.paper::after {
   content: "";
   position: absolute; inset: 0;
   background-image:
-    repeating-linear-gradient(92deg, rgba(116, 88, 54, .055) 0 1px, transparent 1px 7px),
-    repeating-linear-gradient(2deg, rgba(116, 88, 54, .045) 0 1px, transparent 1px 9px),
-    radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(96, 70, 38, .22) 100%);
+    repeating-linear-gradient(92deg, rgba(116, 88, 54, .05) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(2deg, rgba(116, 88, 54, .04) 0 1px, transparent 1px 9px),
+    radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(96, 70, 38, .2) 100%);
   mix-blend-mode: multiply;
 }
 
-.intro-media { position: absolute; inset: 0; perspective: 1400px; }
-
-/* 阶段二：草稿被“建模”，照片以轻微俯角立起 */
-.intro-photo--model {
+/* 铅笔稿：自校门中心向两侧铺开（mask 由中心向两边扩张） */
+.sketch {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transform: perspective(1100px) rotateX(7deg) scale(1.14);
-  transform-origin: 50% 62%;
-  filter: saturate(.62) contrast(1.06) brightness(1);
-  transition:
-    opacity 1s var(--ease),
-    transform 3.4s cubic-bezier(.2, .7, .2, 1),
-    filter 2s var(--ease);
-  z-index: 1;
-}
-body.is-solid .intro-photo--model { opacity: 1; transform: perspective(1100px) rotateX(4.5deg) scale(1.07); }
-/* 水面晕开时先收起模型，让实景真正从水里“长”出来 */
-body.is-watered .intro-photo--model {
-  opacity: 0;
-  transform: perspective(1100px) rotateX(0) scale(1);
-  filter: saturate(.88) contrast(1.04);
-  transition:
-    opacity .4s var(--ease),
-    transform 2.4s cubic-bezier(.2, .7, .2, 1),
-    filter 2s var(--ease);
-}
-
-/* 蓝图网格叠加，让“仿3D”有建造感 */
-.intro-blueprint {
-  position: absolute; inset: 0;
-  z-index: 2;
-  opacity: 0;
-  background-color: rgba(10, 72, 96, .22);
-  background-image:
-    linear-gradient(rgba(126, 214, 240, .22) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(126, 214, 240, .22) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(6, 40, 56, .45) 0%, transparent 22%, transparent 74%, rgba(6, 40, 56, .6) 100%);
-  background-size: 72px 72px, 72px 72px, 100% 100%;
   mix-blend-mode: multiply;
-  transition: opacity 1.2s var(--ease);
-  pointer-events: none;
-}
-body.is-solid .intro-blueprint { opacity: 1; }
-body.is-watered .intro-blueprint { opacity: 0; transition-duration: 2.2s; }
-
-/* 阶段三：水面晕开，露出最终实景 */
-.intro-water {
-  position: absolute; inset: 0;
-  z-index: 3;
-  -webkit-mask-image: radial-gradient(circle at 50% 54%, #000 0 50%, rgba(0, 0, 0, .92) 60%, transparent 74%);
-  mask-image: radial-gradient(circle at 50% 54%, #000 0 50%, rgba(0, 0, 0, .92) 60%, transparent 74%);
+  opacity: .96;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 30%, #000 70%, transparent 100%);
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  -webkit-mask-position: 50% 54%; mask-position: 50% 54%;
-  -webkit-mask-size: 0% 0%; mask-size: 0% 0%;
-  transition:
-    -webkit-mask-size 2.6s cubic-bezier(.32, .68, .3, 1),
-    mask-size 2.6s cubic-bezier(.32, .68, .3, 1);
-  will-change: mask-size;
-}
-.intro-water img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  filter: saturate(.92) contrast(1.05);
-}
-body.is-watered .intro-water {
-  -webkit-mask-size: 340% 340%;
-  mask-size: 340% 340%;
-}
-
-/* 阶段一：铅笔稿在牛皮纸上被一笔一笔勾出 */
-.intro-sketch {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  z-index: 4;
-  mix-blend-mode: multiply;
-  opacity: 1;
-  -webkit-mask-image: linear-gradient(100deg, #000 0%, #000 44%, rgba(0, 0, 0, .5) 62%, transparent 80%);
-  mask-image: linear-gradient(100deg, #000 0%, #000 44%, rgba(0, 0, 0, .5) 62%, transparent 80%);
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  -webkit-mask-position: left center; mask-position: left center;
+  -webkit-mask-position: 50% 50%; mask-position: 50% 50%;
   -webkit-mask-size: 0% 100%; mask-size: 0% 100%;
   transition:
-    -webkit-mask-size 2.6s cubic-bezier(.42, .05, .3, 1),
-    mask-size 2.6s cubic-bezier(.42, .05, .3, 1),
-    opacity .9s var(--ease);
+    -webkit-mask-size var(--draw-t, 5.2s) var(--draw-ease, cubic-bezier(.45, .05, .2, 1)),
+    mask-size var(--draw-t, 5.2s) var(--draw-ease, cubic-bezier(.45, .05, .2, 1));
+  will-change: mask-size;
 }
-body.is-drawn .intro-sketch { -webkit-mask-size: 230% 100%; mask-size: 230% 100%; }
-body.is-solid .intro-sketch { opacity: 0; }
+body.is-drawn .sketch { -webkit-mask-size: 264% 100%; mask-size: 264% 100%; }
 
-/* 勾线笔尖：跟随线稿揭开的位置扫过，像真的在纸上落笔 */
-.intro-pen {
+/* 白色浮雕：铅笔稿落定后缓缓浮现，与校门同框一一对应 */
+.relief {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  transform: scale(1.014);
+  transform-origin: 50% 47%;
+  filter: blur(9px) drop-shadow(0 .5vmin 1vmin rgba(96, 78, 46, .38)) drop-shadow(0 -.2vmin .5vmin rgba(255, 252, 240, .65));
+  transition:
+    opacity 2.5s var(--ease),
+    transform 2.9s var(--ease),
+    filter 2.5s var(--ease);
+  will-change: opacity, filter;
+}
+body.is-solid .relief {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0px) drop-shadow(0 .5vmin 1vmin rgba(96, 78, 46, .38)) drop-shadow(0 -.2vmin .5vmin rgba(255, 252, 240, .65));
+}
+
+/* ---------- 铅笔笔尖：跟随铺开边缘 ---------- */
+
+.pen {
   position: absolute;
-  top: 12%;
-  bottom: 14%;
-  left: 0;
-  width: 2px;
-  z-index: 6;
+  top: 18%; bottom: 16%;
+  left: 50%;
+  width: 3px;
+  z-index: 3;
+  border-radius: 2px;
   pointer-events: none;
   opacity: 0;
   background: linear-gradient(to bottom,
-    transparent 0%, rgba(255, 250, 236, .7) 20%, rgba(255, 252, 240, .95) 50%,
-    rgba(255, 250, 236, .7) 80%, transparent 100%);
-  box-shadow: 0 0 26px 7px rgba(255, 246, 222, .3);
-  filter: blur(.3px);
+    transparent 0%, rgba(44, 46, 52, .5) 18%, rgba(58, 60, 66, .82) 50%,
+    rgba(44, 46, 52, .5) 82%, transparent 100%);
+  box-shadow: 0 0 20px 5px rgba(70, 72, 78, .22);
 }
-body.is-drawn .intro-pen { animation: penSweep 2.6s cubic-bezier(.42, .05, .3, 1) forwards; }
-body.is-solid .intro-pen { opacity: 0; animation: none; }
+.pen--r { transform: scaleX(-1); }
+body.is-drawn:not(.is-solid) .pen--l { animation: penLeft var(--draw-t, 5.2s) var(--draw-ease, cubic-bezier(.45, .05, .2, 1)) forwards; }
+body.is-drawn:not(.is-solid) .pen--r { animation: penRight var(--draw-t, 5.2s) var(--draw-ease, cubic-bezier(.45, .05, .2, 1)) forwards; }
+body.is-solid .pen { animation: none; opacity: 0; }
 
-@keyframes penSweep {
-  0% { left: 0; opacity: 0; }
-  6% { opacity: .85; }
-  88% { opacity: .55; }
-  100% { left: 100%; opacity: 0; }
+@keyframes penLeft {
+  0% { left: 50%; opacity: 0; }
+  4% { opacity: .95; }
+  82% { opacity: .75; }
+  100% { left: -41%; opacity: 0; }
+}
+@keyframes penRight {
+  0% { left: 50%; opacity: 0; }
+  4% { opacity: .95; }
+  82% { opacity: .75; }
+  100% { left: 141%; opacity: 0; }
 }
 
-.intro-grade {
+/* ---------- 水墨晕开：多处起笔，洗去纸稿，浮出实景 ---------- */
+
+.ink-layer {
   position: absolute; inset: 0;
-  z-index: 5;
-  background:
-    linear-gradient(90deg, rgba(3, 11, 17, .66) 0%, rgba(3, 11, 17, .30) 30%, transparent 58%),
-    linear-gradient(to bottom, rgba(3, 11, 17, .72) 0%, rgba(3, 11, 17, .05) 24%, rgba(3, 11, 17, .08) 52%, rgba(3, 11, 17, .82) 100%),
-    radial-gradient(90% 80% at 50% 45%, transparent 40%, rgba(3, 11, 17, .55) 100%);
-  opacity: 0;
-  transition: opacity 1.6s var(--ease);
-}
-body.is-solid .intro-grade { opacity: .55; }
-body.is-revealed .intro-grade { opacity: 1; }
-
-/* 打草稿阶段：标题转成铅笔墨色，避免白字压在浅色牛皮纸上（导航是实心蓝底，保持白字） */
-body.is-drawn:not(.is-solid) .intro-wordmark {
-  color: rgba(24, 32, 30, .84);
-  text-shadow: 0 0 24px rgba(246, 240, 226, .9), 0 0 8px rgba(246, 240, 226, .6);
-}
-body.is-drawn:not(.is-solid) .intro-meta { color: rgba(24, 32, 30, .5); }
-body.is-drawn:not(.is-solid) .scroll-cue { color: rgba(24, 32, 30, .55); }
-body.is-drawn:not(.is-solid) .cue-line {
-  background: linear-gradient(to bottom, rgba(24, 32, 30, .05), rgba(24, 32, 30, .55));
-}
-
-/* 校门天空：循环飘动的白云（一直播放） */
-.intro-clouds {
-  position: absolute;
-  left: 0; right: 0; top: 0;
-  height: 32%;
-  z-index: 6;
+  z-index: 8;
   pointer-events: none;
-  overflow: hidden;
-  opacity: 0;
-  transition: opacity 2s var(--ease);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, rgba(0, 0, 0, .5) 66%, transparent 94%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 42%, rgba(0, 0, 0, .5) 66%, transparent 94%);
-  will-change: opacity;
+  mix-blend-mode: multiply;
+  filter: url(#inkTurb) blur(6px);
 }
-body.is-solid .intro-clouds { opacity: 1; }
-
-.intro-clouds i {
+.ink-layer i {
   position: absolute;
-  left: 0;
-  display: block;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: left center;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 200'%3E%3Cdefs%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='1.8'/%3E%3C/filter%3E%3C/defs%3E%3Cg filter='url(%23b)' fill='%23ffffff'%3E%3Ccircle cx='118' cy='140' r='56'/%3E%3Ccircle cx='188' cy='108' r='70'/%3E%3Ccircle cx='286' cy='90' r='84'/%3E%3Ccircle cx='382' cy='112' r='72'/%3E%3Ccircle cx='462' cy='142' r='50'/%3E%3Crect x='86' y='138' width='430' height='44' rx='22'/%3E%3C/g%3E%3C/svg%3E");
-  animation-name: cloudDrift;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  will-change: transform;
-}
-.intro-clouds i:nth-child(1) {
-  top: -3%;
-  width: 34vmax; height: 11.4vmax;
-  opacity: .5;
-  animation-duration: 132s;
-  animation-delay: -24s;
-}
-.intro-clouds i:nth-child(2) {
-  top: 7%;
-  width: 45vmax; height: 15vmax;
-  opacity: .34;
-  animation-duration: 186s;
-  animation-delay: -96s;
-}
-.intro-clouds i:nth-child(3) {
-  top: 16%;
-  width: 24vmax; height: 8vmax;
-  opacity: .26;
-  animation-duration: 104s;
-  animation-delay: -58s;
-}
-
-@keyframes cloudDrift {
-  0% { transform: translate3d(-100%, 0, 0); }
-  100% { transform: translate3d(160%, 0, 0); }
-}
-
-/* 水中涟漪 */
-.intro-ripples {
-  position: absolute; inset: 0;
-  z-index: 4;
-  pointer-events: none;
-}
-.intro-ripples span {
-  position: absolute;
-  left: 50%; top: 54%;
-  width: 34vmax; height: 34vmax;
-  margin: -17vmax 0 0 -17vmax;
-  border: 1px solid rgba(206, 231, 238, .5);
+  left: var(--bx, 50%); top: var(--by, 50%);
+  width: 110vmax; height: 110vmax;
+  margin: -55vmax 0 0 -55vmax;
   border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(6, 17, 27, .96) 0 42%,
+    rgba(7, 20, 32, .9) 55%,
+    rgba(9, 26, 41, .6) 68%,
+    rgba(12, 33, 49, .28) 79%,
+    rgba(14, 38, 55, 0) 88%);
   opacity: 0;
-  transform: scale(.08);
+  transform: scale(calc(var(--br, 1) * .02)) rotate(-6deg);
+  will-change: transform, opacity;
 }
-body.is-watered .intro-ripples span {
-  animation: rippleOut 3.2s cubic-bezier(.2, .55, .35, 1) forwards;
+body.is-watered:not(.is-revealed) .ink-layer i {
+  animation: inkBloom 4.6s cubic-bezier(.4, .1, .3, 1) var(--bd, 0s) both;
 }
-body.is-watered .intro-ripples span:nth-child(2) { animation-delay: .45s; border-color: rgba(206, 231, 238, .34); }
-body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-color: rgba(206, 231, 238, .22); }
+@keyframes inkBloom {
+  0% { opacity: 0; transform: scale(calc(var(--br, 1) * .02)) rotate(-6deg); }
+  8% { opacity: 1; }
+  22% { transform: scale(calc(var(--br, 1) * .11)) rotate(-2deg); }
+  46% { transform: scale(calc(var(--br, 1) * .38)) rotate(1deg); }
+  70% { opacity: 1; transform: scale(var(--br, 1)) rotate(2.5deg); }
+  84% { opacity: 1; transform: scale(calc(var(--br, 1) * 1.05)) rotate(4deg); }
+  100% { opacity: 0; transform: scale(calc(var(--br, 1) * 1.12)) rotate(5deg); }
+}
 
-@keyframes rippleOut {
-  0% { opacity: .7; transform: scale(.06); }
-  70% { opacity: .18; }
-  100% { opacity: 0; transform: scale(1.5); }
-}
+/* ---------- 文案 ---------- */
 
 .intro-copy {
   position: absolute;
   left: 0; right: 0;
   bottom: clamp(74px, 11vh, 132px);
-  z-index: 5;
+  z-index: 9;
   padding: 0 clamp(14px, 3.6vw, 56px);
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  pointer-events: none;
 }
+/* 终章文案可读性：底部压一层渐变 */
+.intro-copy::before {
+  content: "";
+  position: absolute;
+  left: -10%; right: -10%; bottom: -18%;
+  height: 130%;
+  background: linear-gradient(to top, rgba(6, 22, 34, .58) 0%, rgba(6, 22, 34, .26) 46%, transparent 78%);
+  pointer-events: none;
+}
+.intro-copy > * { position: relative; }
 
+.intro-kicker {
+  font-family: var(--ui);
+  font-size: 12px;
+  letter-spacing: .42em;
+  color: var(--golden-bright);
+  text-transform: uppercase;
+  opacity: 0;
+  animation: introUp 1.2s var(--ease) 1.55s forwards;
+}
 .intro-wordmark {
   margin: 0;
   font-family: var(--serif);
   font-weight: 400;
-  font-size: clamp(24px, 8.9vw, 196px);
-  line-height: .94;
-  letter-spacing: .012em;
-  white-space: nowrap;
+  font-size: clamp(58px, 11.5vw, 176px);
+  line-height: 1.02;
+  letter-spacing: .055em;
   color: var(--cream);
-  text-shadow: 0 2px 30px rgba(0, 0, 0, .38), 0 0 2px rgba(255, 244, 214, .2);
+  text-shadow: 0 2px 34px rgba(2, 12, 22, .45), 0 0 2px rgba(255, 244, 214, .18);
   opacity: 0;
-  transform: translateY(24px);
-  animation: introUp 1.5s var(--ease) 1.7s forwards;
+  transform: translateY(26px);
+  animation: introUp 1.5s var(--ease) 1.75s forwards;
 }
+.intro-sub {
+  font-family: var(--ui);
+  font-size: clamp(10px, 1.15vw, 14px);
+  letter-spacing: .34em;
+  color: rgba(255, 244, 214, .78);
+  opacity: 0;
+  animation: introUp 1.4s var(--ease) 2.05s forwards;
+}
+/* 草稿阶段：文案化作铅笔墨色，压在浅色纸上 */
+html.js body.is-drawn:not(.is-solid) .intro-kicker { color: rgba(96, 76, 44, .88); }
+html.js body.is-drawn:not(.is-solid) .intro-wordmark {
+  color: rgba(30, 34, 40, .88);
+  text-shadow: 0 0 26px rgba(246, 240, 226, .95), 0 0 8px rgba(246, 240, 226, .65);
+}
+html.js body.is-drawn:not(.is-solid) .intro-sub { color: rgba(48, 52, 58, .66); }
 
 @keyframes introUp {
   to { opacity: 1; transform: translateY(0); }
@@ -513,62 +559,24 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
 .intro-foot {
   position: absolute;
   left: 0; right: 0; bottom: 28px;
-  z-index: 4;
+  z-index: 9;
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 0 var(--pad);
-}
-
-.scroll-cue {
-  position: absolute;
-  left: 50%;
-  bottom: 6px;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  font-size: 9px;
-  letter-spacing: .32em;
-  color: var(--text-2);
-  opacity: 0;
-  animation: introUp 1.2s var(--ease) 1.6s forwards;
-}
-.cue-line {
-  width: 1px;
-  height: 54px;
-  background: linear-gradient(to bottom, rgba(241, 234, 220, .05), rgba(241, 234, 220, .7));
-  position: relative;
-  overflow: hidden;
-}
-.cue-line::after {
-  content: "";
-  position: absolute;
-  left: 0; top: -40%;
-  width: 100%; height: 40%;
-  background: var(--amber);
-  animation: cueDrop 2.4s var(--ease) infinite;
-}
-@keyframes cueDrop {
-  0% { top: -40%; opacity: 0; }
-  30% { opacity: 1; }
-  100% { top: 100%; opacity: 0; }
-}
-.cue-text {
-  writing-mode: horizontal-tb;
-  white-space: nowrap;
-  letter-spacing: .24em;
+  pointer-events: none;
 }
 
 .intro-meta {
   margin-left: auto;
+  font-family: var(--ui);
   font-size: 9px;
   letter-spacing: .3em;
-  color: var(--muted);
+  color: rgba(255, 244, 214, .6);
   opacity: 0;
-  animation: introUp 1.2s var(--ease) 1.7s forwards;
+  animation: introUp 1.2s var(--ease) 2.1s forwards;
 }
+html.js body.is-drawn:not(.is-solid) .intro-meta { color: rgba(48, 44, 36, .55); }
 
 /* =========================================================
    淮河溯源
@@ -1954,10 +1962,10 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
     transform: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    background: linear-gradient(180deg, rgba(6, 20, 30, .94), rgba(9, 28, 40, .9));
+    background: linear-gradient(180deg, rgba(0, 112, 180, .96), rgba(0, 100, 164, .93));
   }
   .site-head.is-scrolled {
-    background: rgba(6, 20, 30, .94);
+    background: rgba(0, 102, 166, .95);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -1969,7 +1977,7 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
     align-items: flex-start;
     gap: 8px;
     padding: 80px var(--pad) 40px;
-    background: rgba(6, 22, 32, .97);
+    background: rgba(0, 74, 124, .97);
     transform: translateY(-100%);
     visibility: hidden;
     transition: transform .6s var(--ease), visibility 0s .6s;
@@ -1994,8 +2002,7 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
   .intro { min-height: 560px; }
   .intro-copy { bottom: 15vh; }
   .intro-meta { display: none; }
-  .scroll-cue { left: auto; right: 0; transform: none; }
-  .cue-text { display: none; }
+  .intro-wordmark { letter-spacing: .04em; }
 
   .chapter-mark { left: 18px; top: 13%; transform: none; writing-mode: horizontal-tb; flex-direction: column; gap: 6px; }
   .chapter-en { display: none; }
@@ -2076,16 +2083,23 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .grain { animation: none; }
-  .cue-line::after { animation: none; }
   .map-pin i::after { animation: none; }
-  .intro-kicker, .intro-title, .intro-en, .intro-desc, .intro-wordmark, .scroll-cue, .intro-meta {
+  .intro-kicker, .intro-wordmark, .intro-sub, .intro-meta {
     animation: none;
     opacity: 1;
     transform: none;
   }
-  .intro-clouds i { animation: none; }
-  .intro-sketch, .intro-photo--model, .intro-water, .intro-blueprint, .intro-grade { transition-duration: .01ms; }
-  .intro-ripples span { animation: none; opacity: 0; }
+  /* 开屏直接呈现完整封面：纸稿退场、实景就位、相机归位 */
+  html.js .era-draft { opacity: 0; transition: none; }
+  html.js .era-final { opacity: 1; transform: none; transition: none; }
+  html.js .stage-zoom { transform: scale(1) translateY(0); transition: none; }
+  .stage-zoom { transition-duration: .01ms; }
+  .sketch { transition-duration: .01ms; mask-size: 264% 100%; }
+  .relief { transition-duration: .01ms; }
+  .pen { display: none; }
+  .ink-layer i { animation: none !important; opacity: 0 !important; }
+  .clouds img { animation: none; }
+  .gate-cutout { animation: none; }
   .panel, .reveal { opacity: 1; transform: none; transition: none; }
 }
 
@@ -2369,14 +2383,7 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
    （保留原有规则，以下为覆盖层）
    ========================================================= */
 
-/* ---------- 1. 开屏 / 溯源 / 入海：整体提亮 ---------- */
-
-.intro-grade {
-  background:
-    linear-gradient(90deg, rgba(4, 18, 28, .58) 0%, rgba(4, 18, 28, .24) 30%, transparent 58%),
-    linear-gradient(to bottom, rgba(4, 18, 28, .62) 0%, rgba(4, 18, 28, .04) 24%, rgba(4, 18, 28, .06) 52%, rgba(4, 18, 28, .74) 100%),
-    radial-gradient(90% 80% at 50% 45%, transparent 46%, rgba(4, 18, 28, .46) 100%);
-}
+/* ---------- 1. 溯源 / 入海：整体提亮 ---------- */
 
 .scene::after {
   background:
@@ -2708,10 +2715,10 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
 
 .detail-page .site-head::before { content: none; }
 .detail-page .site-head.is-scrolled {
-  background: rgba(6, 20, 30, .86);
+  background: rgba(0, 102, 166, .93);
   backdrop-filter: blur(16px) saturate(1.1);
   -webkit-backdrop-filter: blur(16px) saturate(1.1);
-  border-color: rgba(166, 129, 80, .46);
+  border-color: rgba(255, 255, 255, .32);
 }
 .detail-page .site-head.is-scrolled::before { opacity: 0; }
 
@@ -2814,8 +2821,7 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
 .panel-kicker { font-size: 11px; }
 .ocean-kicker { font-size: 11px; }
 .ocean-desc { font-size: 15.5px; }
-.ocean-cta,
-.scroll-cue { font-size: 13px; }
+.ocean-cta { font-size: 13px; }
 
 .index-list a em { font-size: 12px; }
 .index-list a span { font-size: 11px; }

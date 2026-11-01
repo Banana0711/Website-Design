@@ -44,7 +44,9 @@
   }
 
   /* ---------------------------------------------------------
-     开屏：牛皮纸打稿 → 仿3D立起 → 水中晕开
+     开屏：铅笔稿自校门中心铺开（相机升起拉远）
+           → 白色浮雕渐显 → 水墨晕开 → 活的封面
+     阶段由 body 类驱动：is-drawn → is-solid → is-watered → is-revealed
      --------------------------------------------------------- */
 
   var introTimers = [];
@@ -77,10 +79,10 @@
     function startIntro() {
       if (introStarted) return;
       introStarted = true;
-      introStep('is-drawn', 320);
-      introStep('is-solid', 3200);
-      introStep('is-watered', 4600);
-      introStep('is-revealed', 6300);
+      introStep('is-drawn', 420);    /* 铅笔稿铺开 + 相机升起拉远（5.2s） */
+      introStep('is-solid', 6100);   /* 白色浮雕缓缓浮现（2.5s） */
+      introStep('is-watered', 9400); /* 水墨自多处晕开，浮出真实校门（约4.5s） */
+      introStep('is-revealed', 15700); /* 封面活体：水纹互动、视差 */
     }
     if (document.readyState === 'complete') startIntro();
     else window.addEventListener('load', startIntro, { once: true });
@@ -90,6 +92,192 @@
         if (!document.body.classList.contains('is-revealed')) finishIntro();
       }, { once: true, passive: true });
     });
+  }
+
+  /* ---------------------------------------------------------
+     封面广场水纹：绿幕区域（画面底部广场）荡漾水波纹
+     参考图里的同心圆发光涟漪：透视压扁成椭圆，成组扩散
+     --------------------------------------------------------- */
+
+  function initPlazaRipples() {
+    var canvas = document.getElementById('plazaRipples');
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var W = 0, H = 0;
+    var drops = [];
+    var raf = 0;
+
+    function size() {
+      var r = canvas.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      W = r.width; H = r.height;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    size();
+    window.addEventListener('resize', function () {
+      size();
+      drops.length = 0;
+    });
+
+    function spawn(x, y, power) {
+      if (!W) size();
+      if (!W) return;
+      drops.push({ x: x, y: y, t: performance.now(), p: power || 1 });
+      if (drops.length > 16) drops.shift();
+      if (!raf) raf = window.requestAnimationFrame(loop);
+    }
+
+    function loop(now) {
+      raf = 0;
+      ctx.clearRect(0, 0, W, H);
+      var alive = false;
+      var LIFE = 3600;
+
+      for (var i = drops.length - 1; i >= 0; i--) {
+        var d = drops[i];
+        var age = now - d.t;
+        if (age > LIFE + 900) { drops.splice(i, 1); continue; }
+        alive = true;
+
+        /* 一滴涟漪：一组同心椭圆，暗环折射 + 亮环反光，在浅色地面上也可读 */
+        for (var k = 0; k < 4; k++) {
+          var rk = (age - k * 430) / LIFE;
+          if (rk <= 0 || rk >= 1) continue;
+          var ease = 1 - Math.pow(1 - rk, 2.35);
+          var r = (5 + ease * 64 * d.p) * (1 - k * 0.16);
+          var a = Math.pow(1 - rk, 1.8) * 0.68 * d.p * (1 - k * 0.2);
+          var ry = r * 0.34;
+
+          /* 暗色折射环：把波纹“压”进地面 */
+          ctx.beginPath();
+          ctx.ellipse(d.x, d.y, r, ry, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(28, 74, 108,' + (a * 0.34).toFixed(3) + ')';
+          ctx.lineWidth = 5.2;
+          ctx.stroke();
+
+          /* 亮色反光环 */
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.beginPath();
+          ctx.ellipse(d.x, d.y, r, ry, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(168, 224, 246,' + (a * 0.5).toFixed(3) + ')';
+          ctx.lineWidth = 4.4;
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.ellipse(d.x, d.y, r * 0.985, ry * 0.985, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(235, 250, 255,' + a.toFixed(3) + ')';
+          ctx.lineWidth = 1.35;
+          ctx.stroke();
+          ctx.globalCompositeOperation = 'source-over';
+        }
+
+        /* 落水亮点 */
+        var fk = age / 560;
+        if (fk < 1) {
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.beginPath();
+          var cr = 9 * (1 - fk * 0.42);
+          ctx.ellipse(d.x, d.y, cr, cr * 0.34, 0, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(235, 250, 255,' + ((1 - fk) * 0.55 * d.p).toFixed(3) + ')';
+          ctx.fill();
+          ctx.globalCompositeOperation = 'source-over';
+        }
+      }
+
+      if (alive) {
+        raf = window.requestAnimationFrame(loop);
+      } else {
+        ctx.clearRect(0, 0, W, H);
+      }
+    }
+
+    /* 环境涟漪：封面可见时自动落雨成纹 */
+    (function autoSpawn() {
+      function beat() {
+        var revealed = document.body.classList.contains('is-revealed');
+        var onCover = (window.scrollY || window.pageYOffset) < window.innerHeight * 0.7;
+        if (revealed && onCover && document.visibilityState === 'visible' && W) {
+          spawn(
+            W * (0.04 + Math.random() * 0.92),
+            H * (0.16 + Math.random() * 0.76),
+            0.72 + Math.random() * 0.6
+          );
+        }
+        window.setTimeout(beat, 460 + Math.random() * 640);
+      }
+      window.setTimeout(beat, 900);
+    })();
+
+    /* 指针互动：点在广场上，涟漪应声荡开 */
+    var introEl = document.querySelector('.intro');
+    if (!introEl) return;
+    var lastMove = { x: 0, y: 0, t: 0 };
+
+    function toCanvas(e) {
+      var r = canvas.getBoundingClientRect();
+      var x = e.clientX - r.left;
+      var y = e.clientY - r.top;
+      if (x < 0 || y < 0 || x > r.width || y > r.height) return null;
+      return { x: x, y: y };
+    }
+
+    introEl.addEventListener('pointerdown', function (e) {
+      if (!document.body.classList.contains('is-revealed')) return;
+      var pt = toCanvas(e);
+      if (pt) spawn(pt.x, pt.y, 2);
+    }, { passive: true });
+
+    introEl.addEventListener('pointermove', function (e) {
+      if (!document.body.classList.contains('is-revealed')) return;
+      if (e.pointerType && e.pointerType !== 'mouse') return;
+      var now = performance.now();
+      if (now - lastMove.t < 170) return;
+      var pt = toCanvas(e);
+      if (!pt) return;
+      var dx = pt.x - lastMove.x, dy = pt.y - lastMove.y;
+      if (dx * dx + dy * dy < 2200) return;
+      lastMove = { x: pt.x, y: pt.y, t: now };
+      spawn(pt.x, pt.y, 0.85);
+    }, { passive: true });
+  }
+
+  /* ---------------------------------------------------------
+     封面视差：指针带动舞台轻微漂移（仅终章后启用）
+     --------------------------------------------------------- */
+
+  function initStageParallax() {
+    if (prefersReduced || !window.matchMedia('(pointer: fine)').matches) return;
+    var par = document.getElementById('stagePar');
+    var introEl = document.querySelector('.intro');
+    if (!par || !introEl) return;
+    var tx = 0, ty = 0, cx = 0, cy = 0, running = false;
+
+    function step() {
+      cx += (tx - cx) * 0.055;
+      cy += (ty - cy) * 0.055;
+      par.style.transform = 'translate3d(' + cx.toFixed(2) + 'px,' + cy.toFixed(2) + 'px,0)';
+      if (Math.abs(tx - cx) > 0.08 || Math.abs(ty - cy) > 0.08) {
+        window.requestAnimationFrame(step);
+      } else {
+        running = false;
+      }
+    }
+
+    introEl.addEventListener('pointermove', function (e) {
+      if (!document.body.classList.contains('is-revealed')) return;
+      tx = (e.clientX / window.innerWidth - 0.5) * -11;
+      ty = (e.clientY / window.innerHeight - 0.5) * -7;
+      if (!running) { running = true; window.requestAnimationFrame(step); }
+    }, { passive: true });
+  }
+
+  if (!prefersReduced) {
+    initPlazaRipples();
+    initStageParallax();
   }
 
   /* ---------------------------------------------------------
@@ -717,7 +905,7 @@
      按钮 / CTA：水波纹质感
      --------------------------------------------------------- */
   var waterSelectors = [
-    '.rail-arrow', '.ocean-cta', '.scroll-cue', '.detail-back',
+    '.rail-arrow', '.ocean-cta', '.detail-back',
     '.detail-next', '.detail-home', '.btn-send'
   ];
   var waterHosts = $$(waterSelectors.join(','));
