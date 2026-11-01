@@ -519,6 +519,7 @@ body.is-watered:not(.is-revealed) .ink-layer i {
   font-size: 12px;
   letter-spacing: .42em;
   color: var(--golden-bright);
+  text-shadow: 0 1px 16px rgba(4, 16, 26, .6), 0 0 2px rgba(4, 16, 26, .3);
   text-transform: uppercase;
   opacity: 0;
   animation: introUp 1.2s var(--ease) 1.55s forwards;
@@ -545,7 +546,10 @@ body.is-watered:not(.is-revealed) .ink-layer i {
   animation: introUp 1.4s var(--ease) 2.05s forwards;
 }
 /* 草稿阶段：文案化作铅笔墨色，压在浅色纸上 */
-html.js body.is-drawn:not(.is-solid) .intro-kicker { color: rgba(96, 76, 44, .88); }
+html.js body.is-drawn:not(.is-solid) .intro-kicker {
+  color: rgba(96, 76, 44, .88);
+  text-shadow: 0 0 16px rgba(246, 240, 226, .8);
+}
 html.js body.is-drawn:not(.is-solid) .intro-wordmark {
   color: rgba(30, 34, 40, .88);
   text-shadow: 0 0 26px rgba(246, 240, 226, .95), 0 0 8px rgba(246, 240, 226, .65);
