@@ -1454,16 +1454,6 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
   transition: border-color .4s, background .4s;
 }
 .person:hover { border-color: rgba(217, 138, 75, .38); background: rgba(217, 138, 75, .045); }
-.person-ghost {
-  position: absolute;
-  right: -6px;
-  top: -34px;
-  font-family: var(--serif);
-  font-size: 118px;
-  line-height: 1;
-  color: rgba(241, 234, 220, .045);
-  pointer-events: none;
-}
 .person-life {
   font-size: 9px;
   letter-spacing: .18em;
@@ -2570,7 +2560,6 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
   border-color: rgba(194, 118, 60, .5);
   background: rgba(194, 118, 60, .06);
 }
-.person-ghost { color: rgba(28, 47, 55, .06); }
 .person-life { color: var(--day-muted); }
 .person-role { color: var(--day-amber); }
 .person > p:last-child { color: var(--day-ink-2); }
