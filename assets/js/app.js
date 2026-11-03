@@ -13,6 +13,20 @@
   var params = new URLSearchParams(window.location.search);
 
   /* ---------------------------------------------------------
+     刷新 / 带锚点进入时，总是回到首页开屏
+     （关闭浏览器的滚动位置记忆，并清除地址栏锚点）
+     --------------------------------------------------------- */
+  if ('scrollRestoration' in window.history) {
+    window.history.scrollRestoration = 'manual';
+  }
+  try {
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  } catch (err) { /* file:// 下忽略 */ }
+  window.scrollTo(0, 0);
+
+  /* ---------------------------------------------------------
      逐字揭示：把标题与导语拆成单字，滚动到位后依次浮现
      （Belgrade Arbor 文字揭示；减弱动效时不拆分，保证静态可读）
      --------------------------------------------------------- */
@@ -220,11 +234,12 @@
         var id = en.target.id;
         if (id === 'intro') setNavActive('intro');
         else if (id === 'journey') setNavActive('journey');
+        else if (id === 'coda') setNavActive('history');
         else if (id === 'ocean') setNavActive('');
       });
     }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
 
-    ['intro', 'journey', 'ocean'].forEach(function (id) {
+    ['intro', 'journey', 'coda', 'ocean'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) sectionObserver.observe(el);
     });

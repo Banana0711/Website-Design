@@ -855,6 +855,9 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
 
 .journey-coda {
   position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 100svh;
   padding: clamp(90px, 14vh, 160px) var(--pad) clamp(80px, 12vh, 130px);
   background: var(--ink);
   color: var(--paper);
@@ -1826,6 +1829,42 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
   background: var(--amber);
   box-shadow: 0 0 12px rgba(217, 138, 75, .7);
   transition: transform .4s;
+}
+
+/* 五章板块整体收进一屏（桌面端）：标题压缩、轨道填满剩余高度 */
+@media (min-width: 861px) {
+  .panels {
+    display: flex;
+    flex-direction: column;
+    height: 100svh;
+    padding: clamp(76px, 9vh, 110px) 0 26px;
+  }
+  .panels-head { margin-bottom: clamp(16px, 2.6vh, 32px); }
+  .panels-head h2 { font-size: clamp(28px, 3.4vw, 50px); }
+  .rail-wrap { flex: 1 1 auto; min-height: 0; }
+  .rail { height: 100%; }
+  .panel { min-height: 0; }
+  .panel-inner { padding: clamp(20px, 2.4vw, 36px); }
+  .panel-head { margin-bottom: clamp(14px, 2vh, 26px); }
+  .rail-progress { margin-top: 12px; }
+
+  /* 面板内容随一屏高度同步压缩 */
+  .motto { margin: 0 0 12px; }
+  .motto-line { font-size: clamp(26px, 2.6vw, 40px); line-height: 1.32; }
+  .culture-grid { gap: 10px; margin-top: 8px; }
+  .culture-card { padding: 14px 16px; }
+  .people-grid { gap: 10px; }
+  .person { padding: 14px 16px; }
+  .person h3 { font-size: 22px; }
+  .person > p:last-child { margin-top: 8px; }
+  .alumni-stats { margin-bottom: 12px; }
+  .alumni-stats > div { padding: 10px 0; }
+  .alumni-stats strong { font-size: clamp(26px, 2.4vw, 38px); }
+  .alumni-list article { padding: 8px 0; }
+  .alumni-list h3 { font-size: 17px; }
+  .alumni-list article > p:last-child { line-height: 1.6; }
+  .alumni-line { padding-top: 12px; font-size: 13px; }
+  .guest-list { max-height: 34vh; }
 }
 
 /* =========================================================
