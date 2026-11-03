@@ -14,6 +14,13 @@
 
 <div class="grain" aria-hidden="true"></div>
 
+<!-- 开场数字加载进度 -->
+<div class="intro-loader" id="introLoader" aria-hidden="true">
+  <p class="loader-num"><span id="loaderNum">0</span><em>%</em></p>
+  <span class="loader-line"><i id="loaderBar"></i></span>
+  <p class="loader-label">HOHAI UNIVERSITY · 1915</p>
+</div>
+
 <header class="site-head" id="siteHead">
   <a class="brand" href="#intro" data-home aria-label="河海大学 首页">
     <img class="brand-seal" src="assets/img/emblem-white.png" alt="" aria-hidden="true">
@@ -38,22 +45,71 @@
 
 <main>
 
-  <!-- ============ 开屏：牛皮纸打稿 → 仿3D立起 → 水中晕开 ============ -->
+  <!-- ============ 开屏：云上铅笔稿 → 白浮雕浮现 → 水墨晕开 → 广场涟漪 ============ -->
   <section class="intro" id="intro" aria-label="开屏">
     <div class="intro-paper" aria-hidden="true"></div>
+
+    <!-- 铅笔线稿滤镜：对校门抠图做拉普拉斯边缘检测，输出石墨色线条（透明底），呈现手绘线稿而非黑白照片 -->
+    <svg class="intro-fx" width="0" height="0" aria-hidden="true" focusable="false">
+      <filter id="pencil-lines" color-interpolation-filters="sRGB" x="-2%" y="-2%" width="104%" height="104%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="smear"/>
+        <feConvolveMatrix in="smear" order="3" divisor="1" edgeMode="duplicate" preserveAlpha="false"
+          kernelMatrix="0 1 0 1 -4 1 0 1 0" result="edges"/>
+        <feColorMatrix in="edges" type="matrix"
+          values="0 0 0 0 0.22
+                  0 0 0 0 0.20
+                  0 0 0 0 0.18
+                  6 0 0 0 -0.06" result="ink"/>
+        <feMorphology in="ink" operator="dilate" radius="1.5" result="inkThick"/>
+        <feComponentTransfer in="inkThick" result="soft">
+          <feFuncA type="table" tableValues="0 0.2 0.7 1 1"/>
+        </feComponentTransfer>
+        <feGaussianBlur in="soft" stdDeviation="0.35"/>
+      </filter>
+    </svg>
+
     <div class="intro-media" aria-hidden="true">
-      <img class="intro-photo intro-photo--model" src="assets/img/gate.jpg" alt="">
-      <div class="intro-blueprint"></div>
-      <div class="intro-water"><img src="assets/img/gate.jpg" alt="河海大学校门"></div>
+      <!-- 实景校门照片：左下、右上两点水墨晕开，有墨处显影彩色实景 -->
+      <div class="intro-photo">
+        <i class="ink" style="--mx:16%; --my:76%; --d:.6s"></i>
+        <i class="ink" style="--mx:84%; --my:24%; --d:1.7s"></i>
+        <i class="ink ink-full"></i>
+      </div>
+
+      <!-- 墨滴层：淡墨晕染的落纸效果（非黑墨），先于照片显影半拍落在浮雕画面上，中心洗透露出校门 -->
+      <div class="intro-inkblots" aria-hidden="true">
+        <i style="--bx:16%; --by:76%; --bd:.35s; --rot:-14deg"></i>
+        <i style="--bx:84%; --by:24%; --bd:1.45s; --rot:22deg"></i>
+      </div>
+
+      <!-- 相机取景：铅笔稿与白浮雕（同一取景，随校门缩放对位） -->
+      <div class="intro-camera">
+        <div class="intro-drawing">
+          <img class="intro-relief" src="assets/img/gate-relief.png" alt="">
+          <div class="intro-sketch">
+            <!-- 排线淡调层：灰调 + 铅笔排线遮罩，提供手绘的内部调子 -->
+            <img class="sketch-fill" src="assets/img/gate-cutout.png" alt="">
+            <!-- 线稿层：拉普拉斯边缘检测输出石墨轮廓线 -->
+            <img class="sketch-lines" src="assets/img/gate-cutout.png" alt="">
+          </div>
+        </div>
+      </div>
+
       <div class="intro-grade"></div>
     </div>
-    <img class="intro-sketch" src="assets/img/gate-draft.jpg" alt="">
-    <span class="intro-pen" aria-hidden="true"></span>
+
+    <!-- 飘动的云层（位于抠图校门之下） -->
     <div class="intro-clouds" aria-hidden="true">
       <i></i><i></i><i></i>
     </div>
-    <div class="intro-ripples" aria-hidden="true">
-      <span></span><span></span><span></span>
+
+    <!-- 广场水波纹（绿幕位置荡漾） -->
+    <div class="intro-plaza" aria-hidden="true">
+      <span style="--cx:50%; --cy:86%; --d:0s"></span>
+      <span style="--cx:50%; --cy:90%; --d:1.15s"></span>
+      <span style="--cx:33%; --cy:92%; --d:.55s"></span>
+      <span style="--cx:67%; --cy:92%; --d:1.7s"></span>
+      <span style="--cx:50%; --cy:95%; --d:2.3s"></span>
     </div>
 
     <div class="intro-copy">
@@ -61,10 +117,6 @@
     </div>
 
     <div class="intro-foot">
-      <a class="scroll-cue" href="#journey" aria-label="向下滚动，开始溯源">
-        <span class="cue-line" aria-hidden="true"></span>
-        <span class="cue-text">向下，溯流而上</span>
-      </a>
       <p class="intro-meta">01 / 04 · 溯源</p>
     </div>
   </section>
