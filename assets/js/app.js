@@ -428,6 +428,16 @@
     });
   });
 
+  /* 导航「校史」：页内平滑滚动到溯流尾声（含“展开百年校史”入口） */
+  $$('[data-nav="history"], .foot-nav a[href="#coda"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      closeNav();
+      var section = $('#coda');
+      if (section) section.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+
   /* ---------------------------------------------------------
      校园地图
      --------------------------------------------------------- */
