@@ -303,88 +303,28 @@
     if (railNext) railNext.addEventListener('click', function () { scrollToPanel(Math.min(panels.length - 1, currentPanel() + 1)); });
 
     rail.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight') { e.preventDefault(); scrollToPanel(Math.min(panels.length - 1, currentPanel() + 1)); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); scrollToPanel(Math.max(0, currentPanel() - 1)); }
-    });
-
-    // 拖拽
-    var down = false;
-    var startX = 0;
-    var startScroll = 0;
-    var moved = false;
-    var lastMoveX = 0;
-    var lastMoveT = 0;
-    var dragVel = 0;
-
-    rail.addEventListener('pointerdown', function (e) {
-      if (e.button !== 0) return;
-      if (e.target.closest('a, button, input, textarea, label')) return;
-      down = true;
-      moved = false;
-      startX = e.clientX;
-      startScroll = rail.scrollLeft;
-      lastMoveX = e.clientX;
-      lastMoveT = performance.now();
-      dragVel = 0;
-      rail.classList.add('is-dragging');
-      rail.style.scrollBehavior = 'auto';
-      rail.style.scrollSnapType = 'none';
-      try { rail.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
-    });
-
-    rail.addEventListener('pointermove', function (e) {
-      if (!down) return;
-      var dx = e.clientX - startX;
-      if (Math.abs(dx) > 5) moved = true;
-      rail.scrollLeft = startScroll - dx;
-      var now = performance.now();
-      var dt = Math.max(12, now - lastMoveT);
-      dragVel = (e.clientX - lastMoveX) / dt;
-      lastMoveX = e.clientX;
-      lastMoveT = now;
-    });
-
-    // 松手后带惯性缓停，横向浏览更顺手
-    function glide(v) {
-      if (prefersReduced || Math.abs(v) < 0.25) return;
-      var step = function () {
-        v *= 0.94;
-        if (Math.abs(v) < 0.12) {
-          rail.style.scrollBehavior = '';
-          rail.style.scrollSnapType = '';
-          return;
-        }
-        rail.style.scrollBehavior = 'auto';
-        rail.style.scrollSnapType = 'none';
-        rail.scrollLeft += v;
-        window.requestAnimationFrame(step);
-      };
-      window.requestAnimationFrame(step);
-    }
-
-    function endDrag(e) {
-      if (!down) return;
-      down = false;
-      rail.classList.remove('is-dragging');
-      try { if (e && rail.hasPointerCapture(e.pointerId)) rail.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
-      var doGlide = moved && !prefersReduced && Math.abs(dragVel) > 0.25 && performance.now() - lastMoveT < 90;
-      if (doGlide) {
-        glide(-dragVel * 16);
-      } else {
-        rail.style.scrollBehavior = '';
-        rail.style.scrollSnapType = '';
-      }
-    }
-    rail.addEventListener('pointerup', endDrag);
-    rail.addEventListener('pointercancel', endDrag);
-    rail.addEventListener('pointerleave', function (e) { if (down) endDrag(e); });
-
-    rail.addEventListener('click', function (e) {
-      if (moved) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
         e.preventDefault();
         e.stopPropagation();
+        scrollToPanel(e.key === 'ArrowRight'
+          ? Math.min(panels.length - 1, currentPanel() + 1)
+          : Math.max(0, currentPanel() - 1));
       }
-    }, true);
+    });
+
+    /* 方向键浏览：五章板块在视口内时，无需聚焦轨道也可用左右方向键 */
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      var t = e.target;
+      if (t && (t.matches && t.matches('input, textarea, select')) || (t && t.isContentEditable)) return;
+      var section = $('#panels');
+      if (!section) return;
+      var rect = section.getBoundingClientRect();
+      var inView = rect.top < window.innerHeight * 0.6 && rect.bottom > window.innerHeight * 0.4;
+      if (!inView) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); scrollToPanel(Math.min(panels.length - 1, currentPanel() + 1)); }
+      else { e.preventDefault(); scrollToPanel(Math.max(0, currentPanel() - 1)); }
+    });
 
     updateRailUI();
   }
@@ -764,108 +704,10 @@
   }, { passive: true });
 
   /* ---------------------------------------------------------
-     六章横向栏目：鼠标移到屏幕左 / 右侧自动滚动
+     六章横向栏目：轨道边缘提示状态（浏览改为方向键 / 箭头）
      --------------------------------------------------------- */
   var railWrap = $('#railWrap');
   if (rail && railWrap) {
-    var edgeDir = 0;
-    var edgeSpeed = 0;
-    var edgeVel = 0;
-    var edgeTicking = false;
-
-    function edgeClassify(x) {
-      var box = railWrap.getBoundingClientRect();
-      var ratio = (x - box.left) / Math.max(1, box.width);
-      var zone = 0.2;
-      var dir = 0;
-      var speed = 0;
-      if (ratio < zone) {
-        dir = -1;
-        speed = clamp((zone - ratio) / zone, 0, 1) * 12;
-      } else if (ratio > 1 - zone) {
-        dir = 1;
-        speed = clamp((ratio - (1 - zone)) / zone, 0, 1) * 12;
-      }
-      edgeDir = dir;
-      edgeSpeed = speed;
-      // 边缘滚动必须瞬时生效：关掉平滑滚动与强制吸附，否则会被拉回当前面板
-      if (dir) {
-        rail.style.scrollBehavior = 'auto';
-        rail.style.scrollSnapType = 'none';
-      }
-      railWrap.classList.toggle('is-hovering', dir !== 0);
-      railWrap.classList.toggle('is-mid-left', dir === -1);
-      railWrap.classList.toggle('is-mid-right', dir === 1);
-      railWrap.classList.toggle('is-at-left', dir === -1 && rail.scrollLeft <= 2);
-      railWrap.classList.toggle('is-at-right', dir === 1 && rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 2);
-    }
-
-    // 速度缓入缓出，避免一进边缘就“窜”出去
-    function edgeStep() {
-      edgeTicking = false;
-      if (rail.classList.contains('is-dragging')) { edgeVel = 0; return; }
-      var target = edgeDir * edgeSpeed;
-      edgeVel += (target - edgeVel) * 0.12;
-      if (Math.abs(edgeVel) < 0.08) edgeVel = 0;
-      if (!edgeVel) {
-        if (!edgeDir) {
-          rail.style.scrollBehavior = '';
-          rail.style.scrollSnapType = '';
-        }
-        return;
-      }
-      rail.style.scrollBehavior = 'auto';
-      rail.style.scrollSnapType = 'none';
-      var before = rail.scrollLeft;
-      rail.scrollLeft = before + edgeVel;
-      if (rail.scrollLeft === before) {
-        edgeVel = 0;
-        railWrap.classList.toggle('is-at-left', edgeDir === -1);
-        railWrap.classList.toggle('is-at-right', edgeDir === 1);
-        return;
-      }
-      edgeTicking = true;
-      window.requestAnimationFrame(edgeStep);
-    }
-
-    function handleEdgeMove(e) {
-      if (e.pointerType && e.pointerType !== 'mouse') return;
-      if (e.target.closest && e.target.closest('a, button, input, textarea, label, select')) {
-        edgeDir = 0;
-        edgeSpeed = 0;
-        railWrap.classList.remove('is-hovering', 'is-mid-left', 'is-mid-right');
-        if (!edgeTicking && edgeVel) {
-          edgeTicking = true;
-          window.requestAnimationFrame(edgeStep);
-        }
-        return;
-      }
-      edgeClassify(e.clientX);
-      if (!edgeTicking) {
-        edgeTicking = true;
-        window.requestAnimationFrame(edgeStep);
-      }
-    }
-
-    railWrap.addEventListener('pointermove', handleEdgeMove, { passive: true });
-    railWrap.addEventListener('mousemove', handleEdgeMove, { passive: true });
-
-    function clearEdge() {
-      edgeDir = 0;
-      edgeSpeed = 0;
-      railWrap.classList.remove('is-hovering', 'is-mid-left', 'is-mid-right');
-      if (!edgeTicking && edgeVel) {
-        edgeTicking = true;
-        window.requestAnimationFrame(edgeStep);
-      } else if (!edgeVel) {
-        rail.style.scrollBehavior = '';
-        rail.style.scrollSnapType = '';
-      }
-    }
-
-    railWrap.addEventListener('pointerleave', clearEdge);
-    railWrap.addEventListener('mouseleave', clearEdge);
-
     rail.addEventListener('scroll', function () {
       railWrap.classList.toggle('is-at-left', rail.scrollLeft <= 2);
       railWrap.classList.toggle('is-at-right', rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 2);

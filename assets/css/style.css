@@ -1102,12 +1102,13 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
   padding-bottom: 8px;
 }
 .panels-side p {
+  margin-top: 14px;
   font-size: 12px;
   line-height: 1.9;
   color: var(--text-2);
 }
 
-.rail-arrows { display: flex; gap: 8px; margin-top: 18px; }
+.rail-arrows { display: flex; gap: 8px; }
 .rail-arrow {
   width: 42px; height: 42px;
   border: 1px solid var(--line);
@@ -1130,12 +1131,9 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
   padding: 4px var(--pad) 18px;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  cursor: grab;
   outline: none;
 }
 .rail::-webkit-scrollbar { display: none; }
-.rail.is-dragging { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; }
-.rail.is-dragging * { user-select: none; }
 
 .panel {
   position: relative;
