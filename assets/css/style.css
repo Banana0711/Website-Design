@@ -2911,13 +2911,6 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
   opacity: .1;
 }
 
-.ocean .section-word {
-  left: 50%;
-  bottom: 2vh;
-  transform: translateX(-50%);
-  opacity: .09;
-}
-
 .panels .section-word {
   top: clamp(48px, 9vh, 110px);
   right: var(--pad);
@@ -2946,9 +2939,6 @@ body.is-watered .intro-ripples span:nth-child(3) { animation-delay: .9s; border-
   .journey-coda .section-word,
   .panels .section-word { display: none; }
   .detail-hero::after { font-size: clamp(64px, 14vw, 120px); }
-}
-@media (max-width: 860px) {
-  .ocean .section-word { display: none; }
 }
 
 /* ---------- 2. 双标签按钮（Dual-label Button） ---------- */
