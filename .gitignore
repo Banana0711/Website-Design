@@ -1,4 +1,11 @@
-# Trae 每次预览自动生成的打包产物
+# Trae 预览时自动生成的打包产物（每次预览都会变，不要进版本库）
 .trae-html-share-packages/
+
+# 编辑器 / 工具缓存
 .screenshots/
 .vscode/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini

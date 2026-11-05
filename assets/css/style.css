@@ -1148,12 +1148,13 @@ body.is-revealed .intro-meta { opacity: 1; }
   padding-bottom: 8px;
 }
 .panels-side p {
+  margin-top: 14px;
   font-size: 12px;
   line-height: 1.9;
   color: var(--text-2);
 }
 
-.rail-arrows { display: flex; gap: 8px; margin-top: 18px; }
+.rail-arrows { display: flex; gap: 8px; }
 .rail-arrow {
   width: 42px; height: 42px;
   border: 1px solid var(--line);
@@ -1176,12 +1177,9 @@ body.is-revealed .intro-meta { opacity: 1; }
   padding: 4px var(--pad) 18px;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  cursor: grab;
   outline: none;
 }
 .rail::-webkit-scrollbar { display: none; }
-.rail.is-dragging { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; }
-.rail.is-dragging * { user-select: none; }
 
 .panel {
   position: relative;
@@ -1890,7 +1888,7 @@ body.is-revealed .intro-meta { opacity: 1; }
   .rail-wrap { flex: 1 1 auto; min-height: 0; }
   .rail { height: 100%; }
   .panel { min-height: 0; }
-  .panel-inner { padding: clamp(20px, 2.4vw, 36px); }
+  .panel-inner { padding: clamp(14px, 2.4vh, 36px) clamp(20px, 2.4vw, 36px); overflow-y: auto; scrollbar-width: thin; }
   .panel-head { margin-bottom: clamp(14px, 2vh, 26px); }
   .rail-progress { margin-top: 12px; }
 
@@ -1903,13 +1901,13 @@ body.is-revealed .intro-meta { opacity: 1; }
   .person { padding: 14px 16px; }
   .person h3 { font-size: 22px; }
   .person > p:last-child { margin-top: 8px; }
-  .alumni-stats { margin-bottom: 12px; }
-  .alumni-stats > div { padding: 10px 0; }
+  .alumni-stats { margin-bottom: clamp(8px, 1.4vh, 12px); }
+  .alumni-stats > div { padding: clamp(6px, 1vh, 10px) 0; }
   .alumni-stats strong { font-size: clamp(26px, 2.4vw, 38px); }
-  .alumni-list article { padding: 8px 0; }
-  .alumni-list h3 { font-size: 17px; }
-  .alumni-list article > p:last-child { line-height: 1.6; }
-  .alumni-line { padding-top: 12px; font-size: 13px; }
+  .alumni-list article { padding: clamp(4px, .8vh, 8px) 0; }
+  .alumni-list h3 { font-size: 17px; line-height: 1.3; }
+  .alumni-list article > p:last-child { line-height: 1.5; }
+  .alumni-line { padding-top: clamp(6px, 1vh, 12px); font-size: 13px; }
   .guest-list { max-height: 34vh; }
 }
 
@@ -2957,13 +2955,6 @@ body.is-revealed .intro-meta { opacity: 1; }
   opacity: .1;
 }
 
-.ocean .section-word {
-  left: 50%;
-  bottom: 2vh;
-  transform: translateX(-50%);
-  opacity: .09;
-}
-
 .panels .section-word {
   top: clamp(48px, 9vh, 110px);
   right: var(--pad);
@@ -2992,9 +2983,6 @@ body.is-revealed .intro-meta { opacity: 1; }
   .journey-coda .section-word,
   .panels .section-word { display: none; }
   .detail-hero::after { font-size: clamp(64px, 14vw, 120px); }
-}
-@media (max-width: 860px) {
-  .ocean .section-word { display: none; }
 }
 
 /* ---------- 2. 双标签按钮（Dual-label Button） ---------- */
