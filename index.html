@@ -35,7 +35,7 @@
     <a href="#panels" data-nav="people" data-panel="2">人物</a>
     <a href="#panels" data-nav="alumni" data-panel="3">校友</a>
     <a href="#panels" data-nav="map" data-panel="4">地图</a>
-    <a href="guestbook.html">留言</a>
+    <a href="#panels" data-nav="guestbook" data-panel="5">留言</a>
   </nav>
 
   <button class="nav-toggle" id="navToggle" aria-label="打开导航" aria-expanded="false">
@@ -283,7 +283,7 @@
               <li><a href="#panels" data-goto="2"><span>02</span>人物<em>把一生交给水的人</em></a></li>
               <li><a href="#panels" data-goto="3"><span>03</span>校友<em>散作满天星</em></a></li>
               <li><a href="#panels" data-goto="4"><span>04</span>校园地图<em>三座校园，一张水网</em></a></li>
-              <li><a href="guestbook.html"><span>05</span>留言<em>把话留给河海</em></a></li>
+              <li><a href="#panels" data-goto="5"><span>05</span>留言<em>把话留给河海</em></a></li>
             </ol>
             <p class="index-hint">横向拖拽 <span aria-hidden="true">→</span></p>
           </div>
@@ -462,7 +462,53 @@
 
             <footer class="panel-foot">
               <span class="foot-note">点击地图上的光点，切换校区</span>
-              <a href="guestbook.html">去留言墙 <span aria-hidden="true">→</span></a>
+            </footer>
+          </div>
+        </article>
+
+        <!-- 05 留言 -->
+        <article class="panel panel-guestbook" data-index="5">
+          <div class="panel-inner">
+            <header class="panel-head">
+              <span class="panel-no">05</span>
+              <div>
+                <p class="panel-kicker">GUESTBOOK · 留言</p>
+                <h2>把话留给河海</h2>
+              </div>
+            </header>
+
+            <div class="guest-grid">
+              <form class="guest-form" id="guestForm" autocomplete="off">
+                <label class="field">
+                  <span>你的名字</span>
+                  <input id="guestName" name="name" type="text" maxlength="12" placeholder="一位水之子" required>
+                </label>
+                <label class="field">
+                  <span>想说的话 <em id="charCount">0 / 60</em></span>
+                  <textarea id="guestText" name="text" maxlength="60" rows="3" placeholder="写下你与河海的一滴水……" required></textarea>
+                </label>
+                <button class="btn-send btn-duo" type="submit">
+                  <span class="duo">
+                    <span class="duo-a">投入河中</span>
+                    <span class="duo-b" aria-hidden="true">投入河中</span>
+                  </span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+                </button>
+                <p class="form-note">留言保存在本机浏览器中，仅用于赛事演示。</p>
+              </form>
+
+              <div class="guest-stream">
+                <div class="stream-head">
+                  <span>最近的漂流瓶</span>
+                  <i></i>
+                  <span id="guestCount">0 条</span>
+                </div>
+                <ul class="guest-list" id="guestList"></ul>
+              </div>
+            </div>
+
+            <footer class="panel-foot">
+              <span class="foot-note">伪后端 · localStorage 持久化</span>
             </footer>
           </div>
         </article>
@@ -472,7 +518,7 @@
 
     <div class="rail-progress" aria-hidden="true">
       <i id="railProgress"></i>
-      <span id="railIndex">00 / 04</span>
+      <span id="railIndex">00 / 05</span>
     </div>
   </section>
 
@@ -498,7 +544,7 @@
       <a href="#panels" data-foot-goto="2">人物</a>
       <a href="#panels" data-foot-goto="3">校友</a>
       <a href="#panels" data-foot-goto="4">地图</a>
-      <a href="guestbook.html">留言</a>
+      <a href="#panels" data-foot-goto="5">留言</a>
     </nav>
   </div>
   <div class="foot-bottom">
