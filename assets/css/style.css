@@ -1168,6 +1168,8 @@ body.is-revealed .intro-meta { opacity: 1; }
 .rail-wrap { position: relative; }
 
 .rail {
+  /* 末块左侧对齐所需的右侧留白：保证最后一块（留言）也能被箭头完整切到 */
+  --panel-w: min(78vw, 1120px);
   display: flex;
   gap: 22px;
   overflow-x: auto;
@@ -1175,6 +1177,7 @@ body.is-revealed .intro-meta { opacity: 1; }
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   padding: 4px var(--pad) 18px;
+  padding-right: max(var(--pad), calc(100vw - var(--panel-w)));
   scrollbar-width: none;
   -ms-overflow-style: none;
   outline: none;
@@ -1183,7 +1186,7 @@ body.is-revealed .intro-meta { opacity: 1; }
 
 .panel {
   position: relative;
-  flex: 0 0 min(78vw, 1120px);
+  flex: 0 0 var(--panel-w);
   min-height: clamp(560px, 66vh, 720px);
   scroll-snap-align: start;
   border: 1px solid var(--day-line);
@@ -2020,7 +2023,7 @@ body.is-revealed .intro-meta { opacity: 1; }
 @media (max-width: 1100px) {
   .scene-copies { left: 7vw; width: 56vw; }
   .year-ghost { opacity: .55; }
-  .panel { flex-basis: 84vw; }
+  .rail { --panel-w: 84vw; }
   .panel-index { flex-basis: 54vw; }
   .guest-grid { gap: 22px; }
 }
@@ -2097,7 +2100,8 @@ body.is-revealed .intro-meta { opacity: 1; }
 
   .panels-head { flex-direction: column; align-items: flex-start; gap: 22px; }
   .panels-side { max-width: 100%; }
-  .panel { flex-basis: 88vw; min-height: 600px; }
+  .rail { --panel-w: 88vw; }
+  .panel { min-height: 600px; }
   .panel-index { flex-basis: 80vw; }
   .panel-inner { padding: 24px; }
 
@@ -2138,7 +2142,7 @@ body.is-revealed .intro-meta { opacity: 1; }
   }
   .intro-copy { bottom: 13vh; }
   .scene-copy .lede { display: none; }
-  .panel { flex-basis: 91vw; }
+  .rail { --panel-w: 91vw; }
   .panel-index { flex-basis: 88vw; }
   .panel-head { gap: 12px; }
   .panel-head h2 { font-size: 22px; }
