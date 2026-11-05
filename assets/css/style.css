@@ -1601,27 +1601,22 @@ body.is-revealed .intro-meta { opacity: 1; }
 .map-canvas {
   position: relative;
   border: 1px solid var(--line);
-  background:
-    radial-gradient(80% 70% at 40% 50%, rgba(31, 101, 121, .2), transparent 70%),
-    rgba(4, 14, 21, .55);
+  background: rgba(4, 14, 21, .55);
   overflow: hidden;
+}
+.map-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(.9);
 }
 .map-canvas::after {
   content: "";
   position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(241, 234, 220, .035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(241, 234, 220, .035) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background: linear-gradient(180deg, rgba(4, 14, 21, .5), rgba(4, 14, 21, .36));
   pointer-events: none;
-}
-.map-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.map-river { filter: drop-shadow(0 0 18px rgba(58, 147, 166, .25)); }
-.map-label {
-  font-family: var(--serif);
-  font-size: 11px;
-  letter-spacing: .3em;
-  fill: #9fc6d2;
 }
 
 .map-pin {
@@ -2665,21 +2660,15 @@ body.is-revealed .intro-meta { opacity: 1; }
 /* 05 地图 */
 .map-canvas {
   border-color: var(--day-line);
-  background:
-    radial-gradient(80% 70% at 40% 50%, rgba(31, 101, 121, .14), transparent 70%),
-    rgba(255, 255, 255, .38);
+  background: #e9e3d2;
 }
+.map-bg { filter: saturate(.92) contrast(1.02); }
 .map-canvas::after {
-  background-image:
-    linear-gradient(rgba(28, 47, 55, .06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(28, 47, 55, .06) 1px, transparent 1px);
+  background: linear-gradient(180deg, rgba(251, 247, 236, .5), rgba(251, 247, 236, .36) 45%, rgba(246, 241, 223, .54));
 }
-.map-label { fill: rgba(28, 47, 55, .75); opacity: .55; }
-.map-roads { stroke: rgba(28, 47, 55, .55); opacity: .5; }
-.map-rings { stroke: rgba(28, 47, 55, .4); opacity: .5; }
-.map-river-thin { stroke: rgba(31, 101, 121, .5); opacity: .7; }
-.map-pin { color: rgba(28, 47, 55, .6); }
-.map-pin i { background: rgba(28, 47, 55, .55); }
+.map-pin { color: rgba(28, 47, 55, .78); }
+.map-pin span { text-shadow: 0 0 8px rgba(251, 247, 236, .95), 0 0 2px rgba(251, 247, 236, .95); }
+.map-pin i { background: rgba(28, 47, 55, .72); }
 .map-pin i::after { border-color: rgba(28, 47, 55, .3); }
 .map-pin:hover,
 .map-pin.is-active { color: var(--day-ink); }

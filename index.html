@@ -7,7 +7,7 @@
 <meta name="description" content="来『字』于河海，新『页』加AI。以淮河溯源为叙事主线，用一条河的旅程，讲述河海大学百十年的来路与去向。">
 <meta name="theme-color" content="#06131c">
 <link rel="icon" href="assets/img/emblem.png" type="image/png">
-<link rel="stylesheet" href="assets/css/style.css?v=17">
+<link rel="stylesheet" href="assets/css/style.css?v=20">
 <link rel="stylesheet" href="assets/css/ripple-ui.css">
 </head>
 <body>
@@ -434,35 +434,15 @@
 
             <div class="map-grid">
               <div class="map-canvas" aria-label="校园交互地图">
-                <svg class="map-svg" viewBox="0 0 640 420" role="img" aria-label="河海大学校园分布示意图">
-                  <defs>
-                    <linearGradient id="riverGrad" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0" stop-color="#2f7f92" stop-opacity=".55"/>
-                      <stop offset="1" stop-color="#0d2a3a" stop-opacity=".9"/>
-                    </linearGradient>
-                  </defs>
-                  <path class="map-river" d="M-20 120 C 120 90, 150 210, 260 210 S 420 120, 520 170 S 620 260, 680 240" fill="none" stroke="url(#riverGrad)" stroke-width="34" stroke-linecap="round"/>
-                  <path class="map-river-thin" d="M-20 120 C 120 90, 150 210, 260 210 S 420 120, 520 170 S 620 260, 680 240" fill="none" stroke="#7ec8d6" stroke-width="1.2" opacity=".5"/>
-                  <g class="map-roads" stroke="#8fb6c2" stroke-width=".8" opacity=".28" fill="none">
-                    <path d="M60 40 L580 380"/><path d="M120 380 L560 40"/><path d="M40 300 L600 300"/>
-                    <path d="M320 20 L320 400"/><path d="M160 20 L160 400"/><path d="M480 20 L480 400"/>
-                  </g>
-                  <g class="map-rings" fill="none" stroke="#8fb6c2" stroke-width=".6" opacity=".18">
-                    <circle cx="210" cy="220" r="46"/><circle cx="210" cy="220" r="86"/>
-                    <circle cx="470" cy="120" r="40"/><circle cx="470" cy="120" r="76"/>
-                    <circle cx="330" cy="340" r="34"/><circle cx="330" cy="340" r="68"/>
-                  </g>
-                  <text x="470" y="330" class="map-label" opacity=".36">长江</text>
-                  <text x="60" y="70" class="map-label" opacity=".22">N</text>
-                </svg>
+                <img class="map-bg" src="assets/img/map-satellite.jpg?v=3" alt="" aria-hidden="true">
 
-                <button class="map-pin is-active" data-campus="0" style="left:32.8%;top:52.4%" aria-label="西康路校区">
+                <button class="map-pin is-active" data-campus="0" style="left:18%;top:46%" aria-label="西康路校区">
                   <i></i><span>西康路</span>
                 </button>
-                <button class="map-pin" data-campus="1" style="left:73.4%;top:28.6%" aria-label="江宁校区">
+                <button class="map-pin" data-campus="1" style="left:17%;top:62%" aria-label="江宁校区">
                   <i></i><span>江宁</span>
                 </button>
-                <button class="map-pin" data-campus="2" style="left:51.6%;top:81%" aria-label="常州校区">
+                <button class="map-pin" data-campus="2" style="left:68%;top:87%" aria-label="常州校区">
                   <i></i><span>常州</span>
                 </button>
               </div>
