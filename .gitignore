@@ -1,0 +1,4 @@
+# Trae 每次预览自动生成的打包产物
+.trae-html-share-packages/
+.screenshots/
+.vscode/
