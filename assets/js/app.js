@@ -474,7 +474,6 @@
 
   var campusData = [
     {
-      no: 'CAMPUS 01',
       name: '西康路校区',
       loc: '南京 · 鼓楼 · 西康路 1 号',
       desc: '百年的起点。校门、水利馆与梧桐，把河海的时间折叠在这一条路上。',
@@ -483,7 +482,6 @@
       alt: '西康路校区校门'
     },
     {
-      no: 'CAMPUS 02',
       name: '江宁校区',
       loc: '南京 · 江宁 · 佛城西路 8 号',
       desc: '更开阔的校园，更年轻的水。图书馆临水而立，把一代代河海人的清晨收进窗里。',
@@ -492,7 +490,6 @@
       alt: '江宁校区校门'
     },
     {
-      no: 'CAMPUS 03',
       name: '常州校区',
       loc: '常州 · 长荡湖畔',
       desc: '向产业与未来延伸的校区。实验室、运动场与湖风，构成河海在长三角的另一处坐标。',
@@ -504,7 +501,6 @@
 
   var campusCard = $('#campusCard');
   var campusImg = $('#campusImg');
-  var campusNo = $('#campusNo');
   var campusName = $('#campusName');
   var campusLoc = $('#campusLoc');
   var campusDesc = $('#campusDesc');
@@ -522,7 +518,6 @@
         campusImg.src = d.img;
         campusImg.alt = d.alt;
       }
-      if (campusNo) campusNo.textContent = d.no;
       if (campusName) campusName.textContent = d.name;
       if (campusLoc) campusLoc.textContent = d.loc;
       if (campusDesc) campusDesc.textContent = d.desc;
