@@ -62,14 +62,32 @@
            → 水墨晕开实景 → 广场涟漪
      --------------------------------------------------------- */
 
+  /* 标题逐字拆分：为 HOHAI UNIVERSITY 的收尾上浮准备字符节点 */
+  (function splitWordmark() {
+    var wm = document.querySelector('.intro-wordmark');
+    if (!wm || prefersReduced) return;
+    var text = wm.textContent;
+    if (!text || wm.querySelector('.ch')) return;
+    wm.textContent = '';
+    var i = 0;
+    text.split('').forEach(function (ch) {
+      if (ch === ' ') {
+        wm.appendChild(document.createTextNode(' '));
+        return;
+      }
+      var span = document.createElement('span');
+      span.className = 'ch';
+      span.style.setProperty('--i', i++);
+      span.textContent = ch;
+      wm.appendChild(span);
+    });
+  })();
+
   var introTimers = [];
-  function introStep(cls, delay) {
-    introTimers.push(window.setTimeout(function () {
-      document.body.classList.add(cls);
-    }, delay));
-  }
+  var introClock = null;
 
   function finishIntro() {
+    if (introClock) { window.clearInterval(introClock); introClock = null; }
     introTimers.forEach(function (t) { window.clearTimeout(t); });
     introTimers = [];
     hideIntroLoader();
@@ -80,6 +98,7 @@
   /* phase 钩子 / 减弱动效 / 用户跳过：立即隐藏加载页（正常完成路径才有淡出） */
   function hideIntroLoader() {
     var loader = document.getElementById('introLoader');
+    document.body.classList.remove('is-loading');
     if (!loader) return;
     loader.style.transition = 'none';
     loader.classList.add('is-done');
@@ -91,13 +110,14 @@
     var num = document.getElementById('loaderNum');
     var bar = document.getElementById('loaderBar');
     var files = [
-      'assets/img/gate-cutout.png',
-      'assets/img/gate-relief.png',
+      'assets/img/gate-sketch.png',
+      'assets/img/gate-clay.png',
       'assets/img/gate-photo.jpg',
       'assets/img/cloud-real.jpg'
     ];
     var loaded = 0, real = 0, shown = 0, done = false, finished = false;
     var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
+    document.body.classList.add('is-loading');
 
     function count() { loaded++; if (loaded >= files.length) done = true; }
     files.forEach(function (src) {
@@ -113,22 +133,27 @@
       num.textContent = '100';
       bar.style.width = '100%';
       loader.classList.add('is-done');
+      document.body.classList.remove('is-loading');
       window.setTimeout(onReady, 320);
     }
 
     /* 兜底：任何环境（rAF 节流、后台标签、异常）下 6s 后必然进入开场 */
     var failSafe = window.setTimeout(finish, 6000);
 
+    /* 固定 2s 的缓入缓出进度，与网络快慢解耦；真实素材未就绪时停在 99% 等待 */
+    function easeInOut(t) {
+      return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    }
+
     function frame(now) {
       if (finished) return;
       var el = ((now || Date.now()) - t0) / 1000;
-      /* 前 1.2s 保底走到 30%，之后由真实加载进度驱动 */
-      real = Math.max(real, Math.min(el / 1.2, 1) * .3);
-      if (done) real = 1;
-      shown += (real - shown) * .09;
+      var p = easeInOut(clamp(el / 2, 0, 1));
+      real = done ? Math.max(real, p) : Math.min(p, .97);
+      shown += (real - shown) * .12;
       num.textContent = Math.min(Math.round(shown * 100), 100);
       bar.style.width = Math.min(shown * 100, 100) + '%';
-      if (done && shown > .995 && el > 1.3) {
+      if (el >= 2 && done) {
         window.clearTimeout(failSafe);
         finish();
         return;
@@ -156,13 +181,36 @@
     finishIntro();
   } else {
     var introStarted = false;
+    var INTRO_STAGES = [
+      [300, 'is-sketch'],
+      [4100, 'is-relief'],   /* 相机拉远（至 5100ms）未结束时浮雕即开始浮现，入场 3.1s，完成后持 0.3s 进入晕开 */
+      [7500, 'is-watered'],
+      [11200, 'is-revealed']
+    ];
+
+    /* 用一条基于经过时间的时钟推进，避免单次 setTimeout 被节流/清空后卡死 */
     function startIntro() {
-      if (introStarted) return;
+      if (introStarted || document.body.classList.contains('is-revealed')) return;
       introStarted = true;
-      introStep('is-sketch', 300);
-      introStep('is-relief', 4100);   /* 相机拉远（至 5100ms）未结束时浮雕即开始浮现，入场 3.1s，完成后持 0.3s 进入晕开 */
-      introStep('is-watered', 7500);
-      introStep('is-revealed', 11200);
+      var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
+      var idx = 0;
+
+      function tick() {
+        var el = ((window.performance && performance.now) ? performance.now() : Date.now()) - t0;
+        while (idx < INTRO_STAGES.length && el >= INTRO_STAGES[idx][0]) {
+          document.body.classList.add(INTRO_STAGES[idx][1]);
+          idx++;
+        }
+        if (idx >= INTRO_STAGES.length && introClock) {
+          window.clearInterval(introClock);
+          introClock = null;
+        }
+      }
+
+      introClock = window.setInterval(tick, 160);
+      tick();
+      /* 兜底：任何异常下 16s 必达完成态 */
+      introTimers.push(window.setTimeout(finishIntro, 16000));
     }
 
     var loaderKicked = false;
@@ -171,9 +219,12 @@
       loaderKicked = true;
       runIntroLoader(startIntro);
     }
-    if (document.readyState === 'complete') kickIntro();
-    else window.addEventListener('load', kickIntro, { once: true });
-    window.setTimeout(kickIntro, 1800);
+    if (prefersReduced) {
+      finishIntro();
+    } else {
+      /* 加载页立即接管首屏，素材就绪后再进入开场 */
+      kickIntro();
+    }
     ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (evt) {
       window.addEventListener(evt, function () {
         if (!document.body.classList.contains('is-revealed')) finishIntro();

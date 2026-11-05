@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Belgrade Arbor 开场序列拆解 · 45 帧</title>
+<script>document.documentElement.classList.add('js');</script>
+<style>
+  :root{
+    --paper:#f6f1e3;
+    --paper-2:#efe7d4;
+    --ink:#1f261e;
+    --olive:#3e562e;
+    --olive-deep:#2e3a26;
+    --gold:#a68150;
+    --sand:#f4f0db;
+    --cream:#fff4d6;
+    --line:rgba(31,38,30,.14);
+    --serif:"Songti SC","SimSun","NSimSun","Times New Roman",serif;
+    --sans:"Work Sans","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    --mono:"Consolas","SFMono-Regular",monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--sans);font-size:16px;line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='.05'/></svg>");
+  }
+  ::selection{background:var(--gold);color:var(--cream)}
+  a{color:inherit}
+  img{display:block;max-width:100%}
+
+  .wrap{width:min(1240px,calc(100% - 64px));margin:0 auto}
+  @media(max-width:780px){.wrap{width:calc(100% - 32px)}}
+
+  /* ---------- header ---------- */
+  header.masthead{padding:88px 0 48px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+  .crumb{
+    font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:rgba(31,38,30,.55);display:flex;gap:14px;align-items:center;flex-wrap:wrap
+  }
+  .crumb span.dot{width:5px;height:5px;border-radius:50%;background:var(--gold)}
+  .masthead-grid{display:grid;grid-template-columns:1fr 300px;gap:64px;align-items:end;margin-top:42px}
+  @media(max-width:1020px){.masthead-grid{grid-template-columns:1fr;gap:36px}}
+  h1.display{
+    font-family:var(--serif);font-weight:400;letter-spacing:-.02em;
+    font-size:clamp(42px,6.6vw,92px);line-height:1.04;margin:0;
+  }
+  h1.display em{font-style:italic;color:var(--gold)}
+  .lede{margin:26px 0 0;max-width:640px;font-size:17px;color:rgba(31,38,30,.72)}
+  .meta-box{border-left:1px solid var(--line);padding-left:24px;font-family:var(--mono);font-size:12px;line-height:2;color:rgba(31,38,30,.62)}
+  .meta-box b{display:block;color:var(--ink);font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.02em}
+  .meta-box .row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px dotted rgba(31,38,30,.18);padding:5px 0}
+
+  /* ---------- sections ---------- */
+  section{padding:78px 0;border-bottom:1px solid var(--line)}
+  .sec-head{display:grid;grid-template-columns:220px 1fr;gap:40px;align-items:start;margin-bottom:46px}
+  @media(max-width:900px){.sec-head{grid-template-columns:1fr;gap:14px}}
+  .sec-num{font-family:var(--mono);font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:rgba(31,38,30,.5);padding-top:10px}
+  .sec-num b{display:block;font-family:var(--serif);font-size:34px;letter-spacing:0;color:var(--gold);font-weight:400;line-height:1}
+  h2.sec-title{font-family:var(--serif);font-weight:400;font-size:clamp(30px,3.6vw,46px);line-height:1.15;margin:0 0 14px;letter-spacing:-.01em}
+  .sec-desc{max-width:720px;color:rgba(31,38,30,.72);margin:0}
+
+  /* ---------- stage timeline ---------- */
+  .timeline{display:flex;height:14px;width:100%;border:1px solid rgba(31,38,30,.2);margin:10px 0 6px}
+  .timeline div{height:100%;position:relative}
+  .timeline .tl1{width:16.7%;background:#ded5bd}
+  .timeline .tl2{width:13.5%;background:#c8bfa4}
+  .timeline .tl3{width:8.3%;background:var(--gold)}
+  .timeline .tl4{width:32.7%;background:var(--olive)}
+  .timeline .tl5{width:28.8%;background:var(--olive-deep)}
+  .tl-legend{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:rgba(31,38,30,.55);letter-spacing:.06em}
+  .stage-table{width:100%;border-collapse:collapse;margin-top:34px;font-size:14.5px}
+  .stage-table th,.stage-table td{text-align:left;padding:16px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  .stage-table th{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(31,38,30,.5);font-weight:400;white-space:nowrap}
+  .stage-table td.t{font-family:var(--mono);font-size:12.5px;white-space:nowrap;color:var(--olive);width:112px}
+  .stage-table td h3{font-family:var(--serif);font-size:20px;font-weight:400;margin:0 0 4px;line-height:1.3}
+  .stage-table td p{margin:0;color:rgba(31,38,30,.72)}
+  #timeline-sec .stage-table td:nth-child(2),
+  #timeline-sec .stage-table th:nth-child(2){width:150px}
+  @media(max-width:780px){
+    .stage-table th,.stage-table td{padding:12px 6px;font-size:13px}
+    .stage-table th{white-space:normal}
+    .stage-table td.t{width:auto;white-space:normal}
+    .stage-table td h3{font-size:16px}
+    #timeline-sec .stage-table td:nth-child(2),
+    #timeline-sec .stage-table th:nth-child(2){width:96px}
+    .files{font-size:10.5px}
+  }
+
+  /* ---------- contact sheet ---------- */
+  .sheet-frame{border:1px solid var(--line);background:#121212;padding:10px}
+  .sheet-frame img{width:100%;height:auto}
+
+  /* ---------- key frames ---------- */
+  .frames{display:grid;grid-template-columns:repeat(2,1fr);gap:34px 30px;margin-top:8px}
+  @media(max-width:780px){.frames{grid-template-columns:1fr}}
+  .frame-card{position:relative}
+  .frame-card img{width:100%;border:1px solid var(--line)}
+  .frame-card .cap{display:flex;gap:14px;align-items:baseline;margin-top:10px}
+  .frame-card .no{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--gold);white-space:nowrap}
+  .frame-card .txt{font-size:13.5px;color:rgba(31,38,30,.7);line-height:1.6}
+  .frame-card .time{position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;background:rgba(31,38,30,.82);color:var(--sand);padding:3px 7px}
+
+  /* ---------- scrubber ---------- */
+  .scrubber{border:1px solid var(--line);background:rgba(255,255,255,.28);padding:18px}
+  .scrub-stage{position:relative;background:#111;aspect-ratio:16/9;overflow:hidden}
+  .scrub-stage img{width:100%;height:100%;object-fit:cover}
+  .scrub-hud{
+    position:absolute;left:14px;bottom:12px;display:flex;gap:10px;align-items:center;
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:var(--sand);
+    background:rgba(31,38,30,.8);padding:5px 9px
+  }
+  .scrub-hud .bar{width:36px;height:1px;background:var(--gold)}
+  .scrub-controls{display:flex;align-items:center;gap:16px;margin-top:16px}
+  .scrub-controls button{
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    background:transparent;border:1px solid rgba(31,38,30,.3);color:var(--ink);
+    padding:7px 12px;cursor:pointer;transition:.25s
+  }
+  .scrub-controls button:hover{background:var(--ink);color:var(--sand)}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;flex:1;height:2px;background:rgba(31,38,30,.22);outline:none
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--olive);
+    border:1px solid var(--paper);cursor:grab;box-shadow:0 0 0 1px rgba(31,38,30,.3)
+  }
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--olive);border:none;cursor:grab}
+
+  /* ---------- dark band ---------- */
+  .dark{background:var(--olive-deep);color:var(--sand);border-bottom:none;position:relative}
+  .dark .sec-desc,.dark .frame-card .txt{color:rgba(244,240,219,.72)}
+  .dark .sec-num,.dark .tl-legend{color:rgba(244,240,219,.5)}
+  .dark .sec-num b{color:var(--gold)}
+  .dark .stage-table th,.dark .stage-table td{border-color:rgba(244,240,219,.16)}
+  .dark .stage-table td p,.dark .stage-table td.t{color:rgba(244,240,219,.72)}
+  .dark .stage-table td h3{color:var(--sand)}
+  .dark .code{border-color:rgba(244,240,219,.18);background:rgba(0,0,0,.24)}
+  .dark .code .code-head{color:rgba(244,240,219,.6);border-color:rgba(244,240,219,.15)}
+  .dark .code pre{color:#e9e2cc}
+
+  /* ---------- code block ---------- */
+  .code{border:1px solid rgba(31,38,30,.18);background:rgba(255,255,255,.35);margin:28px 0}
+  .code-head{display:flex;justify-content:space-between;gap:16px;padding:11px 18px;border-bottom:1px solid rgba(31,38,30,.14);font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(31,38,30,.55)}
+  .code pre{margin:0;padding:20px 18px;overflow:auto;font-family:var(--mono);font-size:12.5px;line-height:1.85;color:#2b3229}
+  .code pre .c{color:#7d856f}
+  .code pre .k{color:#8a5a2c}
+  .code pre .s{color:#5a6b91}
+
+  /* ---------- breakdown grid ---------- */
+  .layers{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:34px}
+  @media(max-width:980px){.layers{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:620px){.layers{grid-template-columns:repeat(2,1fr)}}
+  .layer{border:1px solid var(--line);padding:18px 16px 16px;position:relative;background:rgba(255,255,255,.22)}
+  .layer .z{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--gold)}
+  .layer h4{font-family:var(--serif);font-weight:400;font-size:19px;line-height:1.3;margin:8px 0 8px}
+  .layer p{margin:0;font-size:12.5px;line-height:1.65;color:rgba(31,38,30,.7)}
+  .layer .swatch{height:10px;margin-top:14px}
+
+  .note{
+    border-left:3px solid var(--gold);background:rgba(166,129,80,.08);
+    padding:18px 22px;margin:30px 0;font-size:14.5px;color:rgba(31,38,30,.78)
+  }
+  .note b{font-weight:600;color:var(--ink)}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+  @media(max-width:900px){.two-col{grid-template-columns:1fr}}
+
+  .checklist{list-style:none;padding:0;margin:26px 0 0;counter-reset:c}
+  .checklist li{
+    counter-increment:c;position:relative;padding:15px 0 15px 52px;border-bottom:1px solid rgba(244,240,219,.16);font-size:14.5px
+  }
+  .checklist li::before{
+    content:counter(c,decimal-leading-zero);position:absolute;left:0;top:15px;
+    font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:.1em
+  }
+  .checklist b{display:block;font-family:var(--serif);font-weight:400;font-size:18px;color:var(--sand)}
+  .checklist span{color:rgba(244,240,219,.7)}
+
+  .files{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
+  .files th,.files td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line)}
+  .files th{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(31,38,30,.5);font-weight:400}
+  .files td a:hover{color:var(--gold)}
+  .files td.size{text-align:right;color:rgba(31,38,30,.5);white-space:nowrap}
+
+  footer{padding:64px 0 80px;background:var(--paper)}
+  footer .fin{display:flex;justify-content:space-between;gap:30px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(31,38,30,.45);flex-wrap:wrap}
+
+  .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="crumb">
+      <span>BELGRADE ARBOR / EN</span><span class="dot"></span>
+      <span>HERO SEQUENCE</span><span class="dot"></span>
+      <span>45 FRAMES · 00.20—15.50 s</span>
+    </div>
+    <div class="masthead-grid">
+      <div>
+        <h1 class="display">纸上的建筑，<br>如何<em>长成</em>现实</h1>
+        <p class="lede">开盘 15.6 秒里，一座建筑先被铅笔画出、再被白色纸板折叠出来、最后被颜色从中间“晕”出来。下面把这支开场片拆成 45 帧，并把页面层的编排代码一并摊开。</p>
+      </div>
+      <aside class="meta-box">
+        <div class="row"><span>TARGET</span><span>belgradearbor.rs/en</span></div>
+        <div class="row"><span>SOURCE</span><span>/home/hero.mp4</span></div>
+        <div class="row"><span>SPEC</span><span>2560×1440 · 25fps</span></div>
+        <div class="row"><span>DURATION</span><span>00:15.60</span></div>
+        <div class="row"><span>FRAMES</span><span>45 (0.2—15.5s)</span></div>
+        <div class="row"><span>STACK</span><span>Next · GSAP · Lenis</span></div>
+      </aside>
+    </div>
+  </div>
+</header>
+
+<!-- 01 -->
+<section id="capture">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num"><b>01</b>Capture</div>
+      <div>
+        <h2 class="sec-title">抓取记录：这 45 帧是怎么来的</h2>
+        <p class="sec-desc">页面开场不是 Canvas 或 WebGL，而是一支铺满视口的 MP4。因此“抽帧”直接针对源视频：定位时间点 → 等待解码 → 截屏，保证每一帧都是画面真实状态，而非浏览器重绘猜测。</p>
+      </div>
+    </div>
+
+    <table class="stage-table reveal">
+      <tr><th>项目</th><th>值</th></tr>
+      <tr><td class="t">URL</td><td><h3>https://belgradearbor.rs/en</h3><p>英文站首页，桌面视口 1440×900。</p></td></tr>
+      <tr><td class="t">视频源</td><td><h3>/home/hero.mp4 · 桌面端 / 600px 以下切 /home/hero-m.webm</h3><p>H.264，yuv420p，bt709，2560×1440，25 fps，视频流约 4.3 Mbps，文件 9.03 MB；自带一条 AAC 音轨，但页面统一 muted。</p></td></tr>
+      <tr><td class="t">抽帧方式</td><td><h3>Edge headless 定位 currentTime 后截屏</h3><p>0.2—6.1 s 每 0.25 s 一帧，之后每 0.3—0.5 s 一帧，共 45 帧；输出 1280×720，等比覆盖 16:9 源画面，不裁切。</p></td></tr>
+      <tr><td class="t">页面证据</td><td><h3>实拍 1440×900 两张 + 你的参考截图</h3><p>一张是视频播放中（标题未出现），一张是视频结束、标题逐字浮起后的完成态。</p></td></tr>
+      <tr><td class="t">工具说明</td><td><h3>本地没有 Node，agent-browser / separateweb-capture 均不可执行</h3><p>两者都依赖 npm 生态；因此改用系统自带 Edge 的无头截图能力完成等效抽帧，未改动线上页面。</p></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 02 -->
+<section id="timeline-sec">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num"><b>02</b>Timeline</div>
+      <div>
+        <h2 class="sec-title">五幕：一条从“图纸”到“照片”的时间轴</h2>
+        <p class="sec-desc">整段序列可以精确切成五幕。前 4.6 秒没有任何颜色，只有纸与线；第 4.6 秒天空先“上色”，主体反而留在白模状态；颜色最后从中央玻璃体向外扩散。</p>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="timeline" aria-hidden="true">
+        <div class="tl1" title="0.0—2.6 空白纸与定位线"></div>
+        <div class="tl2" title="2.6—4.6 铅笔线稿生长"></div>
+        <div class="tl3" title="4.6—6.0 天空上色，主体白模"></div>
+        <div class="tl4" title="6.0—10.5 有机显影推进"></div>
+        <div class="tl5" title="10.5—15.6 全彩定格与调色"></div>
+      </div>
+      <div class="tl-legend">
+        <span>0.0s</span><span>2.6s</span><span>4.6s</span><span>6.0s</span><span>10.5s</span><span>15.6s</span>
+      </div>
+    </div>
+
+    <table class="stage-table reveal">
+      <thead><tr><th>时间</th><th>幕</th><th>画面发生了什么</th></tr></thead>
+      <tr>
+        <td class="t">0.00—2.60</td>
+        <td><h3>空白纸</h3></td>
+        <td><p>奶油色纸面几乎全空，只有极淡的屋脊弧线与两根竖线在缓慢加深。画面带纸张噪点与轻微暗角，像一张尚未落笔的硫酸纸。</p></td>
+      </tr>
+      <tr>
+        <td class="t">2.60—4.60</td>
+        <td><h3>铅笔稿生长</h3></td>
+        <td><p>立面开口、柱网、玻璃幕墙的分格线逐段浮现；最终出现排线阴影、尺寸标注（557、5526 970、1220 等）与底部人物剪影。线不是均匀淡入，而是像笔尖沿路径推进。</p></td>
+      </tr>
+      <tr>
+        <td class="t">4.60—6.00</td>
+        <td><h3>天空先上色</h3></td>
+        <td><p>真实云层从画面中上部透出，天空板先恢复彩色；建筑主体仍是白色纸板模型，只有软阴影和线稿。中央玻璃体在这幕末尾出现第一抹暖色。</p></td>
+      </tr>
+      <tr>
+        <td class="t">6.00—10.50</td>
+        <td><h3>有机显影</h3></td>
+        <td><p>颜色以中央玻璃体为核向外扩散，边界是不规则的柔边 + 白雾，局部像被撕开的湿纸。边缘出现明显的彩虹色散，像隔着厚玻璃看过去。左侧与下缘的白色区域最后退场。</p></td>
+      </tr>
+      <tr>
+        <td class="t">10.50—15.60</td>
+        <td><h3>定格与调色</h3></td>
+        <td><p>最后一块白雾退场，全彩渲染占满画面；镜头先轻微推进再回拉，末段天空提亮、阴影抬升，最终停在你截图里的那张“售楼海报”式定稿。</p></td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<!-- 03 -->
+<section id="sheet">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num"><b>03</b>Contact Sheet</div>
+      <div>
+        <h2 class="sec-title">总览：45 帧接触表</h2>
+        <p class="sec-desc">5 列 × 9 行，按时间从左到右、从上到下排列。缩略图下方标注了每帧的时间码，可与下面的检视器对照。</p>
+      </div>
+    </div>
+    <div class="sheet-frame reveal">
+      <img src="captures/belgrade-arbor/frames/contact_sheet.jpg" alt="Belgrade Arbor 开场视频 45 帧接触表" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- 04 -->
+<section id="keyframes">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num"><b>04</b>Key Frames</div>
+      <div>
+        <h2 class="sec-title">十个决定成败的瞬间</h2>
+        <p class="sec-desc">挑出 10 帧放大看：线稿如何“落笔”、白模如何与天空分离、显影边界如何保持湿润感，以及最后一帧与你截图的对应关系。</p>
+      </div>
+    </div>
+    <div class="frames">
+      <figure class="frame-card reveal">
+        <img src="captures/belgrade-arbor/frames/f_01_t00.20.jpg" alt="t=0.20s 空白纸" loading="lazy">
+        <span class="time">00.20s</span>
+        <div class="cap"><span class="no">FRAME 01</span><span class="txt">几乎全空的纸面，只有极淡的定位线。这是整段动画的“呼吸口”，让后面的线条有落笔的余地。</span></div>
+      </figure>
+      <figure class="frame-card reveal">
+        <img src="captures/belgrade-arbor/frames/f_09_t02.20.jpg" alt="t=2.20s 线稿生长" loading="lazy">
+        <span class="time">02.20s</span>
+        <div class="cap"><span class="no">FRAME 09</span><span class="txt">线稿进入高速生长期：柱网、开口、玻璃分格同时展开，仍保留手绘的不均匀轻重。</span></div>
+      </figure>
+      <figure class="frame-card reveal">
+        <img src="captures/belgrade-arbor/frames/f_13_t03.20.jpg" alt="t=3.20s 排线与阴影" loading="lazy">
+        <span class="time">03.20s</span>
+        <div class="cap"><span class="no">FRAME 13</span><span class="txt">线稿最密的阶段，开口内部出现植物排线与阴影，建筑第一次有“体积”。</span></div>
+      </figure>
+      <figure class="frame-card reveal">
+        <img src="captures/belgrade-arbor/frames/f_17_t04.20.jpg" alt="t=4.20s 尺寸标注" loading="lazy">
+        <span class="time">04.20s</span>
+        <div class="cap"><span class="no">FRAME 17</span><span class="txt">顶部出现尺寸标注与引线，白模的软阴影也建立起来。这一帧最像建筑事务所的施工图。</span></div>
+      </figure>
+      <figure class="frame-card reveal">
+        <img src="captures/belgrade-arbor/frames/f_20_t04.95.jpg" alt="t=4.95s 天空上色" loading="lazy">
+        <span class="time">04.95s</span>
+        <div class="cap"><span class="no">FRAME 20</span><span class="txt">天空已完全彩色，建筑仍是白纸模型。环境先于主体上色，让“白模”读起来像实体纸板，而不是没渲完的模型。</span></div>
+      </figure>
+      <figure class="frame-card reveal">
+        <img src="captures/belgrade-arbor/frames/f_26_t06.70.jpg" alt="t=6.70s 显影推进" loading="lazy">
+        <span class="time">06.70s</span>
+        <div class="cap"><span class="no">FRAME 26</span><span class="txt">显影从中央玻璃体开始，边界是柔和的湿边；白模区像磨砂玻璃，透出后面彩色的重影。彩虹色散边在这一帧最明显。</span></div>
+      </figure>
+      <figure class="frame-card reveal">
+        <img src="captures/belgrade-arbor/frames/f_31_t08.50.jpg" alt="t=8.50s 白雾退场" loading="lazy">
+        <span class="time">08.50s</span>
+        <div class="cap"><span class="no">FRAME 31</span><span class="txt">右侧与中央已经完成，左侧仍残留白雾与撕纸状的边缘。显影不是圆形扩散，而是沿建筑体块长出来的。</span></div>
+      </figure>
+      <figure class="frame-card reveal">
+        <img src="captures/belgrade-arbor/frames/f_35_t10.50.jpg" alt="t=10.50s 接近完成" loading="lazy">
+        <span class="time">10.50s</span>
+        <div class="cap"><span class="no">FRAME 35</span><span class="txt">只剩左下角一小块白雾，整体仍偏暗。此时镜头已经开始缓慢推进。</span></div>
+      </figure>
+      <figure class="frame-card reveal">
+        <img src="captures/belgrade-arbor/frames/f_40_t13.00.jpg" alt="t=13.00s 全彩定格" loading="lazy">
+        <span class="time">13.00s</span>
+        <div class="cap"><span class="no">FRAME 40</span><span class="txt">全彩渲染完成，画面进入“成片”状态，颜色比结尾略沉，留给最后两秒做提亮。</span></div>
+      </figure>
+      <figure class="frame-card reveal">
+        <img src="captures/belgrade-arbor/frames/f_45_t15.50.jpg" alt="t=15.50s 尾帧" loading="lazy">
+        <span class="time">15.50s</span>
+        <div class="cap"><span class="no">FRAME 45</span><span class="txt">尾帧：构图、光比与你给的截图一致，只差页面上的标题、导航与奖项角标。视频结束的这一刻触发标题动画。</span></div>
+      </figure>
+      <figure class="frame-card reveal" style="grid-column:1/-1">
+        <img src="captures/belgrade-arbor/live-1440x900-title.png" alt="线上实拍完成态 1440×900" loading="lazy">
+        <span class="time">LIVE · 1440×900</span>
+        <div class="cap"><span class="no">COMPOSED</span><span class="txt">页面完成态：视频播完 → 标题容器淡入 → 字符逐个上浮 → 导航与奖项角标就位。可与你的 1024×554 截图逐项对照。</span></div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 05 -->
+<section id="scrub">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num"><b>05</b>Scrub</div>
+      <div>
+        <h2 class="sec-title">逐帧检视器</h2>
+        <p class="sec-desc">拖动滑杆或用方向键逐帧查看 45 帧原图。适合核对转场的关键节点，例如 4.6 秒天空上色、6.7 秒显影边界、10.5 秒白雾退场。</p>
+      </div>
+    </div>
+    <div class="scrubber reveal">
+      <div class="scrub-stage">
+        <img id="scrubImg" src="captures/belgrade-arbor/frames/f_01_t00.20.jpg" alt="当前帧">
+        <div class="scrub-hud"><span id="scrubNo">#01 / 45</span><span class="bar"></span><span id="scrubTime">t = 00.20 s</span></div>
+      </div>
+      <div class="scrub-controls">
+        <button id="prevBtn" type="button">← Prev</button>
+        <input id="scrubRange" type="range" min="1" max="45" value="1" step="1" aria-label="逐帧检视">
+        <button id="nextBtn" type="button">Next →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 DARK -->
+<section id="implementation" class="dark">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num"><b>06</b>Implementation</div>
+      <div>
+        <h2 class="sec-title">页面编排：15.6 秒的壳子是怎么扣上去的</h2>
+        <p class="sec-desc">这支片子承担了全部美术，页面只做三件事：盖住等待、把它铺满、在结束后把标题逐字抬起。以下代码依据线上压缩包还原，变量名已改写。</p>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="reveal">
+        <h3 style="font-family:var(--serif);font-weight:400;font-size:22px;margin:0 0 10px;color:var(--sand)">A · 视频层：一个铺满视口的 video</h3>
+        <p style="margin:0;color:rgba(244,240,219,.72);font-size:14.5px">没有 canvas，没有 shader。容器是 <code style="font-family:var(--mono);font-size:12.5px">h-svh</code>，视频 <code style="font-family:var(--mono);font-size:12.5px">object-cover</code> 铺满，<code style="font-family:var(--mono);font-size:12.5px">preload="none"</code>，等加载器结束再 <code style="font-family:var(--mono);font-size:12.5px">play()</code>。这样首屏不抢带宽，视频的加载时间被 2 秒的假进度完整遮住。</p>
+      </div>
+      <div class="reveal">
+        <h3 style="font-family:var(--serif);font-weight:400;font-size:22px;margin:0 0 10px;color:var(--sand)">B · 加载器：2 秒的“假进度”</h3>
+        <p style="margin:0;color:rgba(244,240,219,.72);font-size:14.5px">0→100 的计数由 GSAP 补间驱动，时长固定 2 秒，与视频真实缓冲无关。计数结束 → 0.5 秒淡出 → 隐藏加载器 → 播放视频 → 解锁 Lenis 滚动。等待感被精确控制，而不是听网络的。</p>
+      </div>
+    </div>
+
+    <div class="code reveal">
+      <div class="code-head"><span>HERO · MOUNT</span><span>GSAP + LENIS</span></div>
+      <pre><span class="c">// 开场：锁定滚动 → 选源 → 假进度 → 淡出 → 播放</span>
+<span class="k">function</span> Hero({ src, mobileSrc }) {
+  <span class="k">const</span> video = useRef(<span class="k">null</span>);
+  <span class="k">const</span> titleWrap = useRef(<span class="k">null</span>);
+  <span class="k">const</span> h1 = useRef(<span class="k">null</span>);
+  <span class="k">const</span> [loading, setLoading] = useState(<span class="k">true</span>);
+  <span class="k">const</span> [pct, setPct] = useState(0);
+  <span class="k">const</span> lenis = useLenis();
+
+  useGSAP(() =&gt; {
+    lenis.current?.stop();                       <span class="c">// 加载期间禁止滚动</span>
+    video.current.src = matchMedia(<span class="s">'(max-width: 600px)'</span>).matches
+      ? mobileSrc : src;                          <span class="c">// 移动端换 webm</span>
+    video.current.load();
+
+    <span class="k">const</span> counter = { value: 0 };
+    gsap.to(counter, {
+      value: 100,
+      duration: 2,                                <span class="c">// 固定 2 秒，不看网络</span>
+      ease: <span class="s">'power1.inOut'</span>,
+      onUpdate: () =&gt; setPct(counter.value),
+      onComplete: () =&gt; {
+        gsap.to(<span class="s">'.loader'</span>, {
+          opacity: 0, duration: 0.5, ease: <span class="s">'power2.out'</span>,
+          onComplete: () =&gt; {
+            setLoading(<span class="k">false</span>);
+            video.current.play();                 <span class="c">// 视频在这里才真正开始</span>
+            lenis.current?.start();
+          }
+        });
+      }
+    });
+  }, { scope: heroScope });
+}</pre>
+    </div>
+
+    <div class="code reveal">
+      <div class="code-head"><span>HERO · ON ENDED</span><span>SPLITTEXT</span></div>
+      <pre><span class="c">// 视频播完（15.6s）才允许标题出现：整块淡入 + 逐字符上浮</span>
+onEnded={() =&gt; {
+  <span class="k">const</span> split = <span class="k">new</span> SplitText(h1.current, { type: <span class="s">'chars'</span> });
+  gsap.set(split.chars, { opacity: 0, y: <span class="s">'2rem'</span> });
+
+  gsap.timeline()
+    .to(titleWrap.current, { opacity: 1, duration: 0.8, ease: <span class="s">'power2.out'</span> }, 0)
+    .to(split.chars, {
+      opacity: 1, y: 0,
+      duration: 0.9,
+      stagger: 0.05,                             <span class="c">// 每个字符依次抬升 50ms</span>
+      ease: <span class="s">'power2.out'</span>
+    }, 0);
+}}</pre>
+    </div>
+
+    <div class="note reveal" style="border-color:var(--gold);background:rgba(244,240,219,.07);color:rgba(244,240,219,.82)">
+      <b>关键顺序</b>：视频结束 → 标题容器淡入 → 字符逐个上浮。也就是说，你截图里的“BELGRADE ARBOR”不可能在视频播放中途出现；它是 15.6 秒结束后才被解锁的最后一个彩蛋。
+    </div>
+
+    <div class="code reveal">
+      <div class="code-head"><span>LAYOUT · TOKENS</span><span>TAILWIND + CSS</span></div>
+      <pre><span class="c">/* 标题：Editorial Old，300 字重，10.5vw，全大写 */</span>
+.huge      { font-family: var(--font-editorialOld); font-weight: 300; line-height: 1; }
+h1.hero    { color: #f4f0db; font-size: 10.5vw; text-transform: uppercase; }
+
+<span class="c">/* 悬浮玻璃胶囊：不是图片，是 backdrop-filter */</span>
+.nav-pill  { position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+             max-width: 640px; width: 100%; z-index: 100; border-radius: 28px;
+             background: rgba(31,38,30,.80); backdrop-filter: blur(16px); }
+
+<span class="c">/* 色板（页面里实际使用的值） */</span>
+--vanilla:#fdfbef  --sand:#f4f0db  --cream:#fff4d6
+--cream-dark:#ccbf99  --golden:#a68150  --green:#60735c  --pine:#2e3a26</pre>
+    </div>
+  </div>
+</section>
+
+<!-- 07 -->
+<section id="art">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num"><b>07</b>Art Direction</div>
+      <div>
+        <h2 class="sec-title">美术层拆解：为什么它像手绘，而不是“特效”</h2>
+        <p class="sec-desc">把每一帧当作合成结果来看，这支片子由六层素材叠出来。它刻意让每一层都保留“材料的痕迹”：纸的噪点、铅笔的轻重、模型的软阴影、湿边的毛糙、玻璃的色散。</p>
+      </div>
+    </div>
+
+    <div class="layers">
+      <div class="layer reveal">
+        <div class="z">LAYER 01</div>
+        <h4>纸</h4>
+        <p>奶油纸底 #f4f0db 附近，带高频噪点与轻微暗角。整段动画几乎不出现纯白，避免了“屏幕感”。</p>
+        <div class="swatch" style="background:#f4f0db"></div>
+      </div>
+      <div class="layer reveal">
+        <div class="z">LAYER 02</div>
+        <h4>铅笔稿</h4>
+        <p>立面线稿不是均匀透明度，而是按路径分段生长；开口里有植物排线，顶部有尺寸标注与引线，底部有人物剪影。</p>
+        <div class="swatch" style="background:#cfc8b4"></div>
+      </div>
+      <div class="layer reveal">
+        <div class="z">LAYER 03</div>
+        <h4>白模</h4>
+        <p>无材质的白模渲染：开口是纯纸色，只有 AO 与软阴影。它负责让建筑先“立起来”，但拒绝给出任何颜色信息。</p>
+        <div class="swatch" style="background:#e8e0cb"></div>
+      </div>
+      <div class="layer reveal">
+        <div class="z">LAYER 04</div>
+        <h4>天空板</h4>
+        <p>真实云层照片，比主体更早上色。天空一到位，白模就被读成“纸板模型”，而不是未完成的渲染。</p>
+        <div class="swatch" style="background:linear-gradient(90deg,#9fb6cf,#dfe7ef)"></div>
+      </div>
+      <div class="layer reveal">
+        <div class="z">LAYER 05</div>
+        <h4>彩色渲染</h4>
+        <p>全彩建筑渲染，含玻璃反射、树影、铺装与行人。显影时它先从中央玻璃体出现，再沿体块向两侧长。</p>
+        <div class="swatch" style="background:linear-gradient(90deg,#8a6f52,#c9b28c,#5d6b4a)"></div>
+      </div>
+      <div class="layer reveal">
+        <div class="z">LAYER 06</div>
+        <h4>显影遮罩</h4>
+        <p>有机柔边遮罩 + 白雾残留 + 彩虹色散。边界像湿纸被撕开，且刻意留下少量白雾延迟退场。</p>
+        <div class="swatch" style="background:linear-gradient(90deg,#f4f0db,#a68150,#2e3a26)"></div>
+      </div>
+    </div>
+
+    <div class="note reveal">
+      <b>判断依据（而非猜测）</b>：页面 HTML 里只有 <code>&lt;video src="/home/hero.mp4"&gt;</code>，没有 canvas、没有 WebGL 初始化；45 帧的画面变化与 15.60 秒、25 fps 的源视频逐帧对齐；标题是唯一的 DOM 叠层。因此线稿生长、白模转彩、湿边显影、色散与调色，全部是后期烘焙进视频的，浏览器只负责播放。<br><br>
+      <b>推断的制作路径</b>：同一套 3D 场景渲两版（白模版 / 全彩版），白模版叠加手绘线稿与标注贴图；再用逐帧手绘或程序生成的有机 alpha 遮罩做转场，叠一层色散与颗粒；最后统一做镜头运动与调色。
+    </div>
+  </div>
+</section>
+
+<!-- 08 DARK checklist -->
+<section id="replicate" class="dark">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num"><b>08</b>Recipe</div>
+      <div>
+        <h2 class="sec-title">给“河海开屏”的可执行清单</h2>
+        <p class="sec-desc">你的项目已经在用同一套叙事语法。若要把这段参考落到河海首页，最稳的是“预渲染视频 + 极简壳层”，而不是继续用 CSS 去模拟湿边与色散。</p>
+      </div>
+    </div>
+
+    <ul class="checklist reveal">
+      <li><b>先定“三版渲染”，再写页面</b><span>白模版、全彩版、天空版分开输出；白模版上叠线稿与尺寸标注。页面代码不应该承担“画线”的工作。</span></li>
+      <li><b>视频规格对齐参考</b><span>15—16 秒、25 fps、2560×1440、H.264；桌面 MP4 + 移动端 WebM 双份。参考文件 9 MB，属于可接受的首屏预算。</span></li>
+      <li><b>用 2 秒假进度遮住解码</b><span>0→100 由 GSAP 补间驱动，淡出 0.5 秒；期间锁滚动（Lenis stop），播放开始再解锁。</span></li>
+      <li><b>视频属性写死四件套</b><span>muted、playsInline、preload="none"、object-cover；容器 h-svh。少一项都会在 iOS 上翻车。</span></li>
+      <li><b>标题只等 onEnded</b><span>SplitText 按字符拆分，先 set 到 opacity 0 / y 2rem，再用 0.9 秒、stagger 0.05 秒抬升；容器整体 0.8 秒淡入。</span></li>
+      <li><b>导航做成玻璃胶囊</b><span>#1F261E 80% + blur 16px + 28px 圆角，宽 640px、top 24px；颜色与深色叙事段同源，不额外引入第四种主色。</span></li>
+      <li><b>保留纸的噪点</b><span>全片不要出现纯白 #fff；纸底压在 #f4f0db 附近，叠 3—5% 噪点与暗角，这是“手绘感”的主要来源。</span></li>
+      <li><b>显影边界要“脏”</b><span>遮罩边缘需要柔化、白雾残留与少量色散；干净的圆形/线性擦除会立刻变成模板特效。</span></li>
+    </ul>
+
+    <div class="note reveal" style="background:rgba(244,240,219,.06);border-color:var(--sand);color:rgba(244,240,219,.8)">
+      <b>范围提醒</b>：以上只覆盖到你截图的位置，即开场视频与标题落位。下一段“Introduction”是另一套机制：900vh 滚动容器 + sticky 视口 + SVG clipPath 形状变形（MorphSVG），不属于本次抽帧范围。
+    </div>
+  </div>
+</section>
+
+<!-- 09 -->
+<section id="files">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num"><b>09</b>Files</div>
+      <div>
+        <h2 class="sec-title">证据与文件索引</h2>
+        <p class="sec-desc">全部素材保存在本工作区，可直接双击查看。视频仅用于离线比对，不随页面发布。</p>
+      </div>
+    </div>
+    <table class="files reveal">
+      <thead><tr><th>文件</th><th>说明</th><th class="size">大小</th></tr></thead>
+      <tr><td><a href="captures/belgrade-arbor/video/hero.mp4">captures/belgrade-arbor/video/hero.mp4</a></td><td>源开场视频，2560×1440 / 25fps / 15.60s</td><td class="size">9.03 MB</td></tr>
+      <tr><td><a href="captures/belgrade-arbor/frames/contact_sheet.jpg">frames/contact_sheet.jpg</a></td><td>45 帧接触表，5×9 排列</td><td class="size">911 KB</td></tr>
+      <tr><td><a href="captures/belgrade-arbor/frames/f_01_t00.20.jpg">frames/f_01 … f_45</a></td><td>45 张逐帧截图，1280×720，文件名含时间码</td><td class="size">5.9 MB</td></tr>
+      <tr><td><a href="captures/belgrade-arbor/reference-final-state.png">reference-final-state.png</a></td><td>你提供的目标截图（完成态）</td><td class="size">3.52 MB</td></tr>
+      <tr><td><a href="captures/belgrade-arbor/live-1440x900-title.png">live-1440x900-title.png</a></td><td>线上实拍：视频结束、标题浮起后的 1440×900 完成态</td><td class="size">1.24 MB</td></tr>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap fin">
+    <span>BELGRADE ARBOR — HERO SEQUENCE BREAKDOWN</span>
+    <span>45 FRAMES · 1280×720 · 2026-11-05</span>
+  </div>
+</footer>
+
+<script>
+  // ---- 逐帧检视器 ----
+  const TIMES = [0.2,0.45,0.7,0.95,1.2,1.45,1.7,1.95,2.2,2.45,2.7,2.95,3.2,3.45,3.7,3.95,4.2,4.45,4.7,4.95,5.2,5.5,5.8,6.1,6.4,6.7,7.0,7.3,7.6,8.0,8.5,9.0,9.5,10.0,10.5,11.0,11.5,12.0,12.5,13.0,13.5,14.0,14.5,15.0,15.5];
+  const img = document.getElementById('scrubImg');
+  const rng = document.getElementById('scrubRange');
+  const no = document.getElementById('scrubNo');
+  const tm = document.getElementById('scrubTime');
+  const pad2 = n => String(n).padStart(2,'0');
+  const fileName = i => `captures/belgrade-arbor/frames/f_${pad2(i+1)}_t${TIMES[i].toFixed(2).padStart(5,'0')}.jpg`;
+
+  function render(i){
+    const idx = Math.max(0, Math.min(TIMES.length - 1, i));
+    img.src = fileName(idx);
+    no.textContent = `#${pad2(idx+1)} / ${TIMES.length}`;
+    tm.textContent = `t = ${TIMES[idx].toFixed(2)} s`;
+    rng.value = idx + 1;
+    img.alt = `第 ${idx+1} 帧，时间 ${TIMES[idx].toFixed(2)} 秒`;
+  }
+  rng.addEventListener('input', e => render(Number(e.target.value) - 1));
+  document.getElementById('prevBtn').addEventListener('click', () => render(Number(rng.value) - 2));
+  document.getElementById('nextBtn').addEventListener('click', () => render(Number(rng.value)));
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT') return;
+    if (e.key === 'ArrowLeft') render(Number(rng.value) - 2);
+    if (e.key === 'ArrowRight') render(Number(rng.value));
+  });
+  render(TIMES.length - 1);
+
+  // ---- 滚动揭示 ----
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

@@ -239,14 +239,16 @@ ol, ul { padding: 0; list-style: none; }
   justify-content: center;
   gap: 22px;
   background:
-    radial-gradient(120% 90% at 50% 42%, #f0e2c8 0%, #e0cba7 58%, #c9ae89 100%);
-  transition: opacity .9s var(--ease), visibility 0s linear .9s;
+    radial-gradient(120% 90% at 50% 42%, #f7eeda 0%, #ecdcbe 58%, #dcc5a2 100%);
+  transition: opacity .5s var(--ease), visibility 0s linear .5s;
 }
 .intro-loader.is-done {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
 }
+/* 加载期间锁定滚动，与 Belgrade Arbor 的开场壳层一致 */
+body.is-loading { overflow: hidden; }
 .loader-num {
   font-family: var(--serif);
   font-size: clamp(38px, 6vw, 76px);
@@ -291,14 +293,14 @@ ol, ul { padding: 0; list-style: none; }
   min-height: 620px;
   overflow: hidden;
   isolation: isolate;
-  background: #d9c3a1;
+  background: #e4d2b4;
 }
 
 /* 牛皮纸底：纸张纤维 + 四角压暗 */
 .intro-paper {
   position: absolute; inset: 0;
   background:
-    radial-gradient(120% 90% at 50% 42%, #edddc2 0%, #ddc8a6 58%, #c6ab86 100%);
+    radial-gradient(120% 90% at 50% 42%, #f7eeda 0%, #efdfc3 58%, #e0cdae 100%);
 }
 .intro-paper::after {
   content: "";
@@ -412,12 +414,9 @@ body.is-sketch .intro-camera { transform: scale(1); }
   object-fit: cover;
 }
 
-/* 铅笔线稿 SVG 滤镜容器：零尺寸，不影响布局 */
-.intro-fx { position: absolute; width: 0; height: 0; overflow: hidden; }
-
-/* 阶段一：铅笔线稿自校门中心落笔，向两侧扩散铺满（排线淡调 + 石墨轮廓线，非黑白照片） */
+/* 阶段一：铅笔线稿自校门中心落笔，向两侧扩散铺满（细线石墨稿，非黑白照片） */
 .intro-sketch {
-  z-index: 1;
+  z-index: 3;
   position: absolute; inset: 0;
   -webkit-mask-image: radial-gradient(120% 85% at 50% 46%, #000 0 40%, rgba(0, 0, 0, .75) 50%, transparent 62%);
           mask-image: radial-gradient(120% 85% at 50% 46%, #000 0 40%, rgba(0, 0, 0, .75) 50%, transparent 62%);
@@ -434,29 +433,22 @@ body.is-sketch .intro-camera { transform: scale(1); }
   width: 100%; height: 100%;
   object-fit: cover;
 }
-/* 排线淡调：灰调石墨色，斜向交叉排线遮罩让调子呈手绘笔触 */
-.sketch-fill {
-  filter: grayscale(1) brightness(1.3) contrast(.85) sepia(.2);
-  opacity: .28;
-  -webkit-mask-image:
-    repeating-linear-gradient(115deg, #000 0 1.5px, transparent 1.5px 4.5px),
-    repeating-linear-gradient(65deg, #000 0 1px, transparent 1px 6px);
-          mask-image:
-    repeating-linear-gradient(115deg, #000 0 1.5px, transparent 1.5px 4.5px),
-    repeating-linear-gradient(65deg, #000 0 1px, transparent 1px 6px);
+/* 石墨线稿：透明底细线，乘在白纸上；白模阶段保留半透明笔迹 */
+.sketch-lines {
+  opacity: .92;
+  mix-blend-mode: multiply;
 }
-.sketch-lines { filter: url(#pencil-lines); }
 body.is-sketch .intro-sketch { -webkit-mask-size: 300% 300%; mask-size: 300% 300%; }
-body.is-relief .intro-sketch { opacity: .8; }
+body.is-relief .intro-sketch { opacity: .62; }
 
-/* 阶段二：白色浮雕自纸面浮现（相机拉远尚未结束时开始，入场 3.1s；黑底经 screen 融入底色，覆于线稿之上） */
+/* 阶段二：白色浮雕自纸面浮现（同源生成的石膏色白模，覆于纸底、托在线稿之下） */
 .intro-relief {
   z-index: 2;
-  mix-blend-mode: screen;
+  filter: drop-shadow(0 30px 54px rgba(66, 46, 24, .30));
   opacity: 0;
   transition: opacity 3.1s var(--ease);
 }
-body.is-relief .intro-relief { opacity: .92; }
+body.is-relief .intro-relief { opacity: .96; }
 
 .intro-grade {
   position: absolute; inset: 0;
@@ -571,7 +563,7 @@ body.is-revealed .intro-plaza span {
   padding: 0 clamp(14px, 3.6vw, 56px);
   display: flex;
   align-items: flex-end;
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 .intro-wordmark {
@@ -593,6 +585,19 @@ body.is-revealed .intro-plaza span {
     text-shadow .9s var(--ease);
 }
 body.is-revealed .intro-wordmark { opacity: 1; transform: translateY(0); }
+
+/* 标题逐字落位：每个字符独立上浮，形成 Belgrade Arbor 式的收尾 */
+.intro-wordmark .ch {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(.72em);
+  transition:
+    opacity .95s var(--ease),
+    transform .95s var(--ease);
+  transition-delay: calc(var(--i, 0) * 55ms + 250ms);
+  will-change: transform, opacity;
+}
+body.is-revealed .intro-wordmark .ch { opacity: 1; transform: translateY(0); }
 
 @keyframes introUp {
   to { opacity: 1; transform: translateY(0); }
@@ -2127,6 +2132,10 @@ body.is-revealed .intro-meta { opacity: 1; }
   .guest-list { max-height: 220px; }
 
   .foot-nav { grid-template-columns: repeat(2, auto); }
+}
+
+@media (max-width: 1100px) and (min-width: 521px) {
+  .intro-wordmark { font-size: 7.9vw; letter-spacing: 0; }
 }
 
 @media (max-width: 520px) {
