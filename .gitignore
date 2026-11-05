@@ -9,3 +9,6 @@
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Git 备份/迁移用的 bundle 包（二进制，不入库）
+*.bundle
