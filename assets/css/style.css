@@ -2951,27 +2951,9 @@ body.is-revealed .intro-meta { opacity: 1; }
   opacity: 1;
 }
 
-/* 详情页 hero：章节巨字 */
-.detail-hero::after {
-  content: attr(data-word);
-  position: absolute;
-  right: 2vw;
-  bottom: 5vh;
-  font-family: var(--serif);
-  font-size: clamp(84px, 12vw, 180px);
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-  color: rgba(255, 244, 214, .13);
-  pointer-events: none;
-  user-select: none;
-  white-space: nowrap;
-}
-
 @media (max-width: 1100px) {
   .journey-coda .section-word,
   .panels .section-word { display: none; }
-  .detail-hero::after { font-size: clamp(64px, 14vw, 120px); }
 }
 
 /* ---------- 2. 双标签按钮（Dual-label Button） ---------- */
