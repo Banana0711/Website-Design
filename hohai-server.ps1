@@ -43,7 +43,7 @@ while ($true) {
           $bytes = [IO.File]::ReadAllBytes($full)
           $ext = [IO.Path]::GetExtension($full).ToLower()
           $ct = if ($types.ContainsKey($ext)) { $types[$ext] } else { 'application/octet-stream' }
-          $header = "HTTP/1.1 200 OK`r`nContent-Type: $ct`r`nContent-Length: $($bytes.Length)`r`nConnection: close`r`nCache-Control: no-cache`r`n`r`n"
+          $header = "HTTP/1.1 200 OK`r`nContent-Type: $ct`r`nContent-Length: $($bytes.Length)`r`nConnection: close`r`nCache-Control: no-store, no-cache, must-revalidate`r`nPragma: no-cache`r`n`r`n"
           $hb = [Text.Encoding]::ASCII.GetBytes($header)
           $stream.Write($hb, 0, $hb.Length)
           $stream.Write($bytes, 0, $bytes.Length)
