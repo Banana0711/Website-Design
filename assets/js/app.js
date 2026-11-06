@@ -58,40 +58,53 @@
   }
 
   /* ---------------------------------------------------------
-     开屏：云上铅笔稿（中心扩散 + 相机拉远）→ 白浮雕浮现
-           → 水墨晕开实景 → 广场涟漪
+     开屏：数字加载进度 → 预渲染视频 → 标题弹入
      --------------------------------------------------------- */
 
-  /* 标题逐字拆分：为 HOHAI UNIVERSITY 的收尾上浮准备字符节点 */
+  var introVideo = document.getElementById('introVideo');
+  var introTimers = [];
+
+  /* 标题逐字拆分：Belgrade Arbor 式入场，每个字符独立上浮 + 去模糊 */
   (function splitWordmark() {
     var wm = document.querySelector('.intro-wordmark');
-    if (!wm || prefersReduced) return;
-    var text = wm.textContent;
-    if (!text || wm.querySelector('.ch')) return;
+    if (!wm || prefersReduced || wm.querySelector('.ch')) return;
+    var text = wm.textContent.trim();
+    if (!text) return;
+    wm.setAttribute('aria-label', text);
     wm.textContent = '';
     var i = 0;
-    text.split('').forEach(function (ch) {
-      if (ch === ' ') {
-        wm.appendChild(document.createTextNode(' '));
-        return;
+    /* 以词为单位包裹，保证小屏换行时单词不被拆断 */
+    text.split(/\s+/).forEach(function (word, wi) {
+      if (wi > 0) {
+        var sp = document.createElement('span');
+        sp.className = 'sp';
+        sp.textContent = '\u00A0';
+        wm.appendChild(sp);
       }
-      var span = document.createElement('span');
-      span.className = 'ch';
-      span.style.setProperty('--i', i++);
-      span.textContent = ch;
-      wm.appendChild(span);
+      var wd = document.createElement('span');
+      wd.className = 'wd';
+      word.split('').forEach(function (ch) {
+        var s = document.createElement('span');
+        s.className = 'ch';
+        s.style.setProperty('--i', i++);
+        s.textContent = ch;
+        wd.appendChild(s);
+      });
+      wm.appendChild(wd);
     });
   })();
 
-  var introTimers = [];
-  var introClock = null;
-
   function finishIntro() {
-    if (introClock) { window.clearInterval(introClock); introClock = null; }
     introTimers.forEach(function (t) { window.clearTimeout(t); });
     introTimers = [];
     hideIntroLoader();
-    document.body.classList.add('is-sketch', 'is-relief', 'is-watered', 'is-revealed');
+    var v = introVideo;
+    if (v) {
+      /* 结束后直接停在末帧，不再 seek，避免视频与实景之间出现空档 */
+      try { v.pause(); } catch (e) {}
+    }
+    document.body.classList.remove('is-playing');
+    document.body.classList.add('is-revealed');
   }
 
   /* 开场数字加载进度：预载开屏素材，进度缓动到 100 后淡出并启动开场 */
@@ -109,23 +122,24 @@
     if (!loader) { onReady(); return; }
     var num = document.getElementById('loaderNum');
     var bar = document.getElementById('loaderBar');
-    var files = [
-      'assets/img/gate-sketch.png',
-      'assets/img/gate-clay.png',
-      'assets/img/gate-photo.jpg',
-      'assets/img/cloud-real.jpg'
-    ];
-    var loaded = 0, real = 0, shown = 0, done = false, finished = false;
+    var real = 0, shown = 0, done = false, finished = false;
     var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
     document.body.classList.add('is-loading');
 
-    function count() { loaded++; if (loaded >= files.length) done = true; }
-    files.forEach(function (src) {
-      var img = new Image();
-      img.onload = count;
-      img.onerror = count;
-      img.src = src;
-    });
+    /* 预载开场视频：能播即视为就绪，失败也放行，避免卡在加载页 */
+    function ready() { done = true; }
+    if (introVideo) {
+      if (introVideo.readyState >= 3) {
+        done = true;
+      } else {
+        introVideo.addEventListener('canplay', ready, { once: true });
+        introVideo.addEventListener('loadeddata', ready, { once: true });
+        introVideo.addEventListener('error', ready, { once: true });
+        try { introVideo.load(); } catch (e) {}
+      }
+    } else {
+      done = true;
+    }
 
     function finish() {
       if (finished) return;
@@ -140,7 +154,7 @@
     /* 兜底：任何环境（rAF 节流、后台标签、异常）下 6s 后必然进入开场 */
     var failSafe = window.setTimeout(finish, 6000);
 
-    /* 固定 2s 的缓入缓出进度，与网络快慢解耦；真实素材未就绪时停在 99% 等待 */
+    /* 固定 2s 的缓入缓出进度，与网络快慢解耦；视频未就绪时停在 99% 等待 */
     function easeInOut(t) {
       return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
     }
@@ -164,72 +178,53 @@
   }
 
   if (params.has('phase')) {
-    hideIntroLoader();
-    var phaseMap = {
-      sketch: ['is-sketch'],
-      relief: ['is-sketch', 'is-relief'],
-      water: ['is-sketch', 'is-relief', 'is-watered'],
-      final: ['is-sketch', 'is-relief', 'is-watered', 'is-revealed'],
-      /* 旧钩子名兼容 */
-      draft: ['is-sketch'],
-      model: ['is-sketch', 'is-relief']
-    };
-    (phaseMap[params.get('phase')] || phaseMap.final).forEach(function (c) {
-      document.body.classList.add(c);
-    });
+    var ph = params.get('phase');
+    if (ph === 'final' || ph === 'revealed' || ph === 'water') {
+      var applyEnd = function () {
+        document.body.classList.add('is-playing');
+        finishIntro();
+      };
+      if (introVideo && introVideo.readyState < 1) {
+        introVideo.addEventListener('loadedmetadata', applyEnd, { once: true });
+      } else {
+        applyEnd();
+      }
+    } else {
+      hideIntroLoader();
+      document.body.classList.add('is-playing');
+    }
   } else if (prefersReduced) {
     finishIntro();
   } else {
     var introStarted = false;
-    var INTRO_STAGES = [
-      [300, 'is-sketch'],
-      [4100, 'is-relief'],   /* 相机拉远（至 5100ms）未结束时浮雕即开始浮现，入场 3.1s，完成后持 0.3s 进入晕开 */
-      [7500, 'is-watered'],
-      [11200, 'is-revealed']
-    ];
 
-    /* 用一条基于经过时间的时钟推进，避免单次 setTimeout 被节流/清空后卡死 */
     function startIntro() {
       if (introStarted || document.body.classList.contains('is-revealed')) return;
       introStarted = true;
-      var t0 = (window.performance && performance.now) ? performance.now() : Date.now();
-      var idx = 0;
+      var v = introVideo;
+      if (!v) { finishIntro(); return; }
+      v.muted = true;
+      document.body.classList.add('is-playing');
 
-      function tick() {
-        var el = ((window.performance && performance.now) ? performance.now() : Date.now()) - t0;
-        while (idx < INTRO_STAGES.length && el >= INTRO_STAGES[idx][0]) {
-          document.body.classList.add(INTRO_STAGES[idx][1]);
-          idx++;
-        }
-        if (idx >= INTRO_STAGES.length && introClock) {
-          window.clearInterval(introClock);
-          introClock = null;
-        }
+      var end = function () { finishIntro(); };
+      v.addEventListener('ended', end, { once: true });
+      v.addEventListener('error', end, { once: true });
+
+      var p = v.play();
+      if (p && p.catch) {
+        p.catch(function () {
+          /* 自动播放被浏览器拦截：直接落到结束帧 + 标题，至少保证首页完整 */
+          finishIntro();
+        });
       }
 
-      introClock = window.setInterval(tick, 160);
-      tick();
-      /* 兜底：任何异常下 16s 必达完成态 */
-      introTimers.push(window.setTimeout(finishIntro, 16000));
+      /* 兜底：视频异常卡住时，16s 后收尾 */
+      introTimers.push(window.setTimeout(function () {
+        if (!v.ended) finishIntro();
+      }, 16000));
     }
 
-    var loaderKicked = false;
-    function kickIntro() {
-      if (loaderKicked) return;
-      loaderKicked = true;
-      runIntroLoader(startIntro);
-    }
-    if (prefersReduced) {
-      finishIntro();
-    } else {
-      /* 加载页立即接管首屏，素材就绪后再进入开场 */
-      kickIntro();
-    }
-    ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (evt) {
-      window.addEventListener(evt, function () {
-        if (!document.body.classList.contains('is-revealed')) finishIntro();
-      }, { once: true, passive: true });
-    });
+    runIntroLoader(startIntro);
   }
 
   /* ---------------------------------------------------------

@@ -7,7 +7,7 @@
 <meta name="description" content="来『字』于河海，新『页』加AI。以淮河溯源为叙事主线，用一条河的旅程，讲述河海大学百十年的来路与去向。">
 <meta name="theme-color" content="#06131c">
 <link rel="icon" href="assets/img/emblem.png" type="image/png">
-<link rel="stylesheet" href="assets/css/style.css?v=20261105b">
+<link rel="stylesheet" href="assets/css/style.css?v=20261106k">
 <link rel="stylesheet" href="assets/css/ripple-ui.css">
 </head>
 <body>
@@ -45,56 +45,38 @@
 
 <main>
 
-  <!-- ============ 开屏：云上铅笔稿 → 白浮雕浮现 → 水墨晕开 → 广场涟漪 ============ -->
+  <!-- ============ 开屏：加载进度 → 预渲染开场视频 → 标题弹入 ============ -->
   <section class="intro" id="intro" aria-label="开屏">
     <div class="intro-paper" aria-hidden="true"></div>
 
-    <!-- 铅笔线稿：由校门抠图离线生成（细线石墨稿），白模：同源生成的石膏色浮雕 -->
-    <div class="intro-media" aria-hidden="true">
-      <!-- 实景校门照片：左下、右上两点水墨晕开，有墨处显影彩色实景 -->
-      <div class="intro-photo">
-        <i class="ink" style="--mx:16%; --my:76%; --d:.6s"></i>
-        <i class="ink" style="--mx:84%; --my:24%; --d:1.7s"></i>
-        <i class="ink ink-full"></i>
-      </div>
-
-      <!-- 墨滴层：淡墨晕染的落纸效果（非黑墨），先于照片显影半拍落在浮雕画面上，中心洗透露出校门 -->
-      <div class="intro-inkblots" aria-hidden="true">
-        <i style="--bx:16%; --by:76%; --bd:.35s; --rot:-14deg"></i>
-        <i style="--bx:84%; --by:24%; --bd:1.45s; --rot:22deg"></i>
-      </div>
-
-      <!-- 相机取景：铅笔稿与白浮雕（同一取景，随校门缩放对位） -->
-      <div class="intro-camera">
-        <div class="intro-drawing">
-          <img class="intro-relief" src="assets/img/gate-clay.png" alt="">
-          <div class="intro-sketch">
-            <!-- 离线生成的细线石墨稿：与实景同源同取景，笔迹落在白模之上 -->
-            <img class="sketch-lines" src="assets/img/gate-sketch.png" alt="">
-          </div>
-        </div>
-      </div>
-
-      <div class="intro-grade"></div>
+    <!-- 预渲染开场视频：铅笔稿 → 白模 → 实景；播放结束停在最后一帧 -->
+    <div class="intro-video-wrap" aria-hidden="true">
+      <video class="intro-video" id="introVideo" muted playsinline preload="auto"
+             poster="assets/img/opening-poster.jpg" disablepictureinpicture>
+        <source src="assets/video/opening.mp4" type="video/mp4">
+      </video>
     </div>
 
-    <!-- 飘动的云层（位于抠图校门之下） -->
-    <div class="intro-clouds" aria-hidden="true">
-      <i></i><i></i><i></i>
+    <!-- 收官：视频末帧之上，校门实景照片缓缓渐显 -->
+    <div class="intro-still" aria-hidden="true">
+      <img src="assets/img/gate-photo.jpg" alt="">
     </div>
 
-    <!-- 广场水波纹（绿幕位置荡漾） -->
+    <!-- 景深：取景带上下虚化 + 暗角，保留早期版本的浅景深观感 -->
+    <div class="intro-dof" aria-hidden="true"></div>
+
+    <!-- 校门前广场的水波纹：透视压扁的椭圆涟漪环 -->
     <div class="intro-plaza" aria-hidden="true">
-      <span style="--cx:50%; --cy:86%; --d:0s"></span>
-      <span style="--cx:50%; --cy:90%; --d:1.15s"></span>
-      <span style="--cx:33%; --cy:92%; --d:.55s"></span>
-      <span style="--cx:67%; --cy:92%; --d:1.7s"></span>
-      <span style="--cx:50%; --cy:95%; --d:2.3s"></span>
+      <span style="--cx:38%;--cy:2%;--d:0s"></span>
+      <span style="--cx:52%;--cy:10%;--d:.5s"></span>
+      <span style="--cx:47%;--cy:16%;--d:.9s"></span>
+      <span style="--cx:56%;--cy:6%;--d:1.8s"></span>
+      <span style="--cx:60%;--cy:22%;--d:2.3s"></span>
+      <span style="--cx:65%;--cy:28%;--d:2.7s"></span>
+      <span style="--cx:43%;--cy:38%;--d:3.5s"></span>
     </div>
 
-    <div class="intro-copy">
-      <h1 class="intro-wordmark">HOHAI UNIVERSITY</h1>
-    </div>
+    <h1 class="intro-wordmark">HOHAI UNIVERSITY</h1>
 
     <div class="intro-foot">
       <p class="intro-meta">01 / 04 · 溯源</p>
@@ -536,8 +518,11 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="assets/js/water.js"></script>
-<script src="assets/js/app.js?v=20261105b"></script>
+<script src="assets/js/app.js?v=20261106k"></script>
 </body>
 </html>
+
+
+
 
 

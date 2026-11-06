@@ -249,6 +249,7 @@ ol, ul { padding: 0; list-style: none; }
 }
 /* 加载期间锁定滚动，与 Belgrade Arbor 的开场壳层一致 */
 body.is-loading { overflow: hidden; }
+body.is-playing { overflow: hidden; }
 .loader-num {
   font-family: var(--serif);
   font-size: clamp(38px, 6vw, 76px);
@@ -310,6 +311,76 @@ body.is-loading { overflow: hidden; }
     repeating-linear-gradient(2deg, rgba(116, 88, 54, .045) 0 1px, transparent 1px 9px),
     radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(96, 70, 38, .22) 100%);
   mix-blend-mode: multiply;
+}
+
+/* 预渲染视频版开屏：视频铺满首屏，播完停在最后一帧 */
+.intro-video-wrap {
+  position: absolute; inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  background: #0d0b08;
+}
+.intro-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: 50% 44%;
+  opacity: 0;
+  transition: opacity .7s var(--ease);
+}
+body.is-playing .intro-video,
+body.is-revealed .intro-video { opacity: 1; }
+
+/* 收官：视频末帧之上，校门实景照片缓缓渐显（同机位交叠，几乎无缝） */
+.intro-still {
+  position: absolute; inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .7s var(--ease);
+}
+.intro-still img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: 50% 44%;
+  filter: saturate(1.03) contrast(1.02);
+}
+body.is-revealed .intro-still { opacity: 1; }
+
+/* 景深：取景带上缘与前景虚化 + 暗角，保留早期版本的浅景深观感 */
+.intro-dof {
+  position: absolute; inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background:
+    radial-gradient(88% 76% at 50% 44%, transparent 44%, rgba(5, 14, 20, .40) 100%),
+    linear-gradient(180deg,
+      rgba(6, 15, 21, .34) 0%,
+      rgba(6, 15, 21, .08) 18%,
+      rgba(6, 15, 21, 0) 36%,
+      rgba(6, 15, 21, 0) 62%,
+      rgba(6, 15, 21, .10) 76%,
+      rgba(6, 15, 21, .56) 100%);
+}
+.intro-dof::before,
+.intro-dof::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  backdrop-filter: blur(7px) saturate(1.04);
+  -webkit-backdrop-filter: blur(7px) saturate(1.04);
+}
+.intro-dof::before {
+  top: 0;
+  height: 23%;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, .72) 46%, transparent 100%);
+          mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, .72) 46%, transparent 100%);
+}
+.intro-dof::after {
+  bottom: 0;
+  height: 27%;
+  -webkit-mask-image: linear-gradient(0deg, #000 0%, rgba(0, 0, 0, .68) 48%, transparent 100%);
+          mask-image: linear-gradient(0deg, #000 0%, rgba(0, 0, 0, .68) 48%, transparent 100%);
 }
 
 .intro-media { position: absolute; inset: 0; z-index: 3; }
@@ -522,12 +593,12 @@ body.is-revealed .intro-grade { opacity: .75; }
 /* 阶段五：广场绿幕处荡漾水波纹（透视压扁的椭圆涟漪环，循环扩散） */
 .intro-plaza {
   position: absolute;
-  left: 0; right: 0; bottom: 0;
+  left: 0; right: 0; bottom: -3cm;
   height: 24%;
-  z-index: 5;
+  z-index: 6;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 1.4s var(--ease);
+  transition: opacity 1.4s var(--ease) .95s;
   -webkit-mask-image: radial-gradient(115% 190% at 50% 150%, #000 0 50%, rgba(0, 0, 0, .55) 63%, transparent 76%);
           mask-image: radial-gradient(115% 190% at 50% 150%, #000 0 50%, rgba(0, 0, 0, .55) 63%, transparent 76%);
 }
@@ -536,68 +607,83 @@ body.is-revealed .intro-plaza { opacity: 1; }
   position: absolute;
   left: var(--cx, 50%);
   top: var(--cy, 90%);
-  width: 46vmin;
-  height: 11vmin;
-  margin: -5.5vmin 0 0 -23vmin;
-  border: 1px solid rgba(208, 234, 246, .55);
+  width: 50vmin;
+  height: 12vmin;
+  margin: -6vmin 0 0 -25vmin;
+  border: 1px solid rgba(220, 245, 255, .85);
   border-radius: 50%;
-  box-shadow: inset 0 0 18px rgba(150, 205, 230, .22);
+  background: radial-gradient(ellipse at center, rgba(160, 220, 240, 0) 58%, rgba(160, 220, 240, .06) 74%, transparent 86%);
+  box-shadow:
+    0 0 18px rgba(150, 205, 230, .40),
+    inset 0 0 26px rgba(150, 205, 230, .38);
   opacity: 0;
   transform: scale(.22);
+}
+/* 内圈：同一涟漪的第二道波峰，两层同心显得更像水面 */
+.intro-plaza span::after {
+  content: "";
+  position: absolute;
+  inset: 18%;
+  border: 1px solid rgba(214, 240, 250, .48);
+  border-radius: 50%;
 }
 body.is-revealed .intro-plaza span {
   animation: plazaRipple 4.6s cubic-bezier(.2, .5, .35, 1) var(--d, 0s) infinite;
 }
 @keyframes plazaRipple {
   0% { opacity: 0; transform: scale(.22); }
-  10% { opacity: .8; }
-  55% { opacity: .28; }
+  10% { opacity: .95; }
+  55% { opacity: .40; }
   100% { opacity: 0; transform: scale(1.55); }
 }
 
-.intro-copy {
-  position: absolute;
-  left: 0; right: 0;
-  bottom: clamp(74px, 11vh, 132px);
-  z-index: 5;
-  padding: 0 clamp(14px, 3.6vw, 56px);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
+/* 封面字：绝对定位于屏幕底部居中，字号随视口宽度铺满约 94% 屏宽 */
 .intro-wordmark {
+  position: absolute;
+  left: 50%;
+  bottom: 5vh;
+  transform: translateX(-50%);
+  z-index: 7;
   margin: 0;
+  width: max-content;
   font-family: var(--serif);
   font-weight: 400;
-  font-size: clamp(24px, 8.9vw, 196px);
-  line-height: .94;
-  letter-spacing: .012em;
+  font-size: 10.4vw;
+  line-height: .9;
+  letter-spacing: -0.03em;
   white-space: nowrap;
-  color: var(--cream);
-  text-shadow: 0 2px 30px rgba(0, 0, 0, .38), 0 0 2px rgba(255, 244, 214, .2);
+  color: var(--sand);
+  pointer-events: none;
   opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 1.5s var(--ease) .25s,
-    transform 1.5s var(--ease) .25s,
-    color .9s var(--ease),
-    text-shadow .9s var(--ease);
 }
-body.is-revealed .intro-wordmark { opacity: 1; transform: translateY(0); }
+body.is-revealed .intro-wordmark { opacity: 1; }
 
-/* 标题逐字落位：每个字符独立上浮，形成 Belgrade Arbor 式的收尾 */
+/* Belgrade Arbor 式文字入场：逐字上浮 + 去模糊，45ms 错峰 */
 .intro-wordmark .ch {
   display: inline-block;
   opacity: 0;
-  transform: translateY(.72em);
+  transform: translateY(2rem);
+  filter: blur(4px);
   transition:
-    opacity .95s var(--ease),
-    transform .95s var(--ease);
-  transition-delay: calc(var(--i, 0) * 55ms + 250ms);
-  will-change: transform, opacity;
+    opacity .7s var(--ease-power),
+    transform .7s var(--ease-power),
+    filter .7s var(--ease-power);
+  transition-delay: calc(750ms + var(--i, 0) * 45ms);
+  will-change: transform, opacity, filter;
 }
-body.is-revealed .intro-wordmark .ch { opacity: 1; transform: translateY(0); }
+body.is-revealed .intro-wordmark .ch {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+.intro-wordmark .wd {
+  display: inline-block;
+  white-space: nowrap;
+}
+.intro-wordmark .sp {
+  display: inline-block;
+  width: .30em;
+}
 
 @keyframes introUp {
   to { opacity: 1; transform: translateY(0); }
@@ -606,7 +692,7 @@ body.is-revealed .intro-wordmark .ch { opacity: 1; transform: translateY(0); }
 .intro-foot {
   position: absolute;
   left: 0; right: 0; bottom: 28px;
-  z-index: 4;
+  z-index: 7;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
@@ -2079,7 +2165,6 @@ body.is-revealed .intro-meta { opacity: 1; }
   .nav-toggle { display: flex; }
 
   .intro { min-height: 560px; }
-  .intro-copy { bottom: 15vh; }
   .intro-meta { display: none; }
 
   .chapter-mark { left: 18px; top: 13%; transform: none; writing-mode: horizontal-tb; flex-direction: column; gap: 6px; }
@@ -2134,18 +2219,8 @@ body.is-revealed .intro-meta { opacity: 1; }
   .foot-nav { grid-template-columns: repeat(2, auto); }
 }
 
-@media (max-width: 1100px) and (min-width: 521px) {
-  .intro-wordmark { font-size: 7.9vw; letter-spacing: 0; }
-}
-
 @media (max-width: 520px) {
   .brand-lockup { height: 34px; }
-  .intro-wordmark {
-    font-size: clamp(26px, 9.4vw, 60px);
-    white-space: normal;
-    line-height: 1.04;
-  }
-  .intro-copy { bottom: 13vh; }
   .scene-copy .lede { display: none; }
   .panel { flex-basis: 91vw; }
   .panel-index { flex-basis: 88vw; }
@@ -2170,12 +2245,17 @@ body.is-revealed .intro-meta { opacity: 1; }
   html { scroll-behavior: auto; }
   .grain { animation: none; }
   .map-pin i::after { animation: none; }
-  .intro-kicker, .intro-title, .intro-en, .intro-desc, .intro-wordmark, .intro-meta {
+  .intro-kicker, .intro-title, .intro-en, .intro-desc, .intro-meta {
     animation: none;
     opacity: 1;
     transform: none;
   }
+  .intro-wordmark { opacity: 1; }
+  .intro-wordmark .ch { opacity: 1; transform: none; filter: none; transition: none; }
   .intro-clouds i { animation: none; }
+  .intro-video { transition-duration: .01ms; }
+  .intro-still { transition-duration: .01ms; }
+  .intro-plaza { transition-delay: 0s; }
   .intro-camera, .intro-sketch, .intro-relief, .intro-photo .ink, .intro-inkblots i, .intro-grade { transition-duration: .01ms; }
   .intro-plaza span { animation: none; opacity: 0; }
   .panel, .reveal { opacity: 1; transform: none; transition: none; }
