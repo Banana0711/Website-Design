@@ -217,12 +217,16 @@
   }
   
 
-  /* 站内嵌入模式：隐藏校徽/背景/渐隐，缩小卡片密度，适配留言板块 */
+  /* 站内嵌入模式：隐藏背景/渐隐，缩小卡片密度，适配留言板块（校徽保留） */
   body.embed::before,
   body.embed #bg-canvas,
-  body.embed .brand,
   body.embed .fade,
   body.embed .vignette { display: none; }
+  body.embed .brand { top: 14px; left: 16px; }
+  body.embed .brand img {
+    height: 40px;
+    filter: drop-shadow(0 3px 8px rgba(0, 60, 120, .22));
+  }
   html.embed { background: #eaf5ff; }
   body.embed {
     background: radial-gradient(120% 90% at 50% 30%,
