@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>河海 · 3D 证言墙</title>
+<style>
+  :root {
+    --bg-center: #EAF5FF;
+    --bg-mid: #CFE8FF;
+    --bg-edge: #B4DAFA;
+    --bg-deep: #9ECBF0;
+    --card-bg: rgba(0, 91, 172, .6);
+    --card-line: rgba(255, 255, 255, .6);
+    --card-line-hover: rgba(255, 255, 255, .92);
+    --text: #E9F1FA;
+    --text-dim: #8FA9C4;
+    --accent: #6FC8FF;
+    --font: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: radial-gradient(120% 90% at 50% 32%,
+      var(--bg-center) 0%,
+      var(--bg-mid) 34%,
+      var(--bg-edge) 66%,
+      var(--bg-deep) 100%);
+    font-family: var(--font);
+    color: var(--text);
+  }
+
+  /* 极细噪点，让蓝色背景有质感 */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .035;
+    z-index: 9;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.9'/></svg>");
+  }
+
+  /* 左上角校徽：固定层级高于卡片墙与渐隐层，滚动时不会被遮挡 */
+  .brand {
+    position: fixed;
+    top: 24px;
+    left: 26px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+  }
+
+  .brand img {
+    width: 64px;
+    height: 64px;
+    display: block;
+    filter: drop-shadow(0 4px 10px rgba(0, 60, 120, .2));
+  }
+
+  .brand-name {
+    font-family: "华文行楷", "STXingkai", "华文隶书", "STLiti", "KaiTi", serif;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    white-space: nowrap;
+    background: linear-gradient(180deg, #4FA8E0 0%, #0069AE 50%, #003C6E 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 6px rgba(0, 45, 85, .5));
+  }
+
+  /* WebGL 海浪背景，铺在渐变底层之上、卡片墙之下 */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .stage {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    perspective: 1300px;
+    perspective-origin: 50% 42%;
+  }
+
+  .wall {
+    --mx: 0px;
+    --my: 0px;
+    display: flex;
+    align-items: flex-start; /* 列高必须等于自身内容高度，-50% 循环位移才能严丝合缝 */
+    gap: 28px;
+    transform:
+      translate3d(calc(-70px + var(--mx)), calc(-50px + var(--my)), 0)
+      rotateX(26deg)
+      rotateZ(25deg)
+      scale(1.6);
+    transform-style: preserve-3d;
+    opacity: 0;
+    transition: opacity .9s ease;
+    will-change: transform;
+  }
+
+  .wall.is-ready { opacity: 1; }
+
+  .col {
+    flex: 0 0 auto;
+    width: var(--w, 300px);
+    animation: drift var(--dur, 26s) linear infinite;
+    animation-delay: var(--delay, 0s);
+    --rot: 10deg;
+    will-change: transform;
+    transform-origin: 50% 50%;
+  }
+
+  /* 两侧列做轻微景深处理 */
+  .col:first-child, .col:last-child {
+    filter: blur(.7px);
+    opacity: .88;
+  }
+
+  .col:hover { animation-play-state: paused; }
+
+  /* 列整体旋转后沿本地 Y 轴平移，视觉上就是右上方 → 左下方的斜向流动 */
+  @keyframes drift {
+    from { transform: rotate(var(--rot)) translate3d(0, -50%, 0); }
+    to   { transform: rotate(var(--rot)) translate3d(0, 0, 0); }
+  }
+
+  .card {
+    position: relative;
+    padding: 16px 20px 18px;
+    margin-bottom: 18px;
+    border: 1px solid var(--card-line);
+    border-radius: 18px;
+    background: var(--card-bg);
+    box-shadow: 0 18px 38px rgba(0, 40, 80, .26);
+    transform: rotateY(var(--ry, 0deg)) rotateZ(var(--rz, 0deg)) scale(var(--s, 1));
+    transition: transform .35s ease, border-color .35s ease, background .35s ease, box-shadow .35s ease;
+    transform-style: preserve-3d;
+  }
+
+  .card:nth-child(3n + 2) {
+    margin-left: 20px;
+    width: calc(100% - 20px);
+  }
+
+  .card:nth-child(4n + 3) {
+    margin-right: 16px;
+    width: calc(100% - 16px);
+  }
+
+  .card:hover {
+    --s: 1.045;
+    border-color: var(--card-line-hover);
+    background: rgba(0, 91, 172, .72);
+    box-shadow: 0 26px 54px rgba(0, 30, 70, .3), 0 0 0 1px rgba(255, 255, 255, .45) inset;
+  }
+
+  .name {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    line-height: 1.3;
+    color: #F2F7FC;
+  }
+
+  .quote {
+    margin: 10px 0 0;
+    font-size: 15.5px;
+    line-height: 1.55;
+    color: #DCE8F4;
+    letter-spacing: .2px;
+  }
+
+  /* 上下 / 四周渐隐，避免边缘生硬截断 */
+  .fade {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 20vh;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .fade-top {
+    top: 0;
+    background: linear-gradient(to bottom, rgba(207, 232, 255, .9), rgba(207, 232, 255, .45) 45%, transparent);
+  }
+
+  .fade-bottom {
+    bottom: 0;
+    background: linear-gradient(to top, rgba(207, 232, 255, .9), rgba(207, 232, 255, .45) 45%, transparent);
+  }
+
+  .vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 6;
+    background: radial-gradient(115% 95% at 50% 48%, transparent 52%, rgba(110, 168, 214, .32) 100%);
+  }
+
+  @media (max-width: 1024px) {
+    .wall { gap: 22px; scale: 1; }
+    .col:nth-child(n + 5) { display: none; }
+    .col { width: 44vw; }
+  }
+
+  @media (max-width: 640px) {
+    .brand { top: 14px; left: 14px; gap: 10px; }
+    .brand img { width: 46px; height: 46px; }
+    .brand-name { font-size: 20px; letter-spacing: .06em; }
+    .wall { scale: .9; }
+    .col:nth-child(n + 3) { display: none; }
+    .col { width: 78vw; }
+    .quote { font-size: 14.5px; }
+  }
+
+</style>
+</head>
+<body>
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <a class="brand" href="index.html" aria-label="河海大学">
+    <img src="assets/img/emblem.png" alt="河海大学校徽">
+    <span class="brand-name">河海大学</span>
+  </a>
+  <main class="stage">
+    <div class="wall" id="wall" aria-label="河海大学证言墙"></div>
+  </main>
+  <div class="fade fade-top" aria-hidden="true"></div>
+  <div class="fade fade-bottom" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+<script>
+  var QUOTES = [
+    { name: "陈知远", quote: "从长江口到实验室，每一滴水都有答案。" },
+    { name: "林清越", quote: "在这里，学会让数据开口说话。" },
+    { name: "苏晚舟", quote: "百年的闸门一开，青春就流进了江海。" },
+    { name: "何疏影", quote: "把论文写在祖国的大江大河上。" },
+    { name: "顾行舟", quote: "模型里的每次涨落，都是真实世界的预演。" },
+    { name: "江语棠", quote: "在河海，连风都带着水汽的浪漫。" },
+    { name: "Ade", quote: "这里的江河教会我，水从不拒绝任何人。" },
+    { name: "沈墨白", quote: "用一行行代码，给河流做一次数字体检。" },
+    { name: "陆听澜", quote: "治水先治心，问渠那得清如许。" },
+    { name: "Sana", quote: "我想把这里的治水经验带回故乡。" },
+    { name: "唐见山", quote: "从一粒沙，看见一整条河。" },
+    { name: "Lukas", quote: "坝体、闸门与水位，每一课都像打开一扇窗。" }
+  ];
+
+  var COLUMNS = [
+    /* 整墙 rotateZ 45°，列内竖直滚动在屏幕上即为右上方 → 左下方 45° 斜流；8 列保证旋转后铺满全屏 */
+    { width: 300, dur: 26, delay: -4, offset: 0, shift: -70, rot: 0 },
+    { width: 278, dur: 20, delay: -11, offset: 3, shift: 30, rot: 0 },
+    { width: 312, dur: 24, delay: -7, offset: 6, shift: -120, rot: 0 },
+    { width: 286, dur: 30, delay: -16, offset: 9, shift: 80, rot: 0 },
+    { width: 294, dur: 22, delay: -9, offset: 1, shift: -30, rot: 0 },
+    { width: 272, dur: 28, delay: -21, offset: 4, shift: 110, rot: 0 },
+    { width: 306, dur: 25, delay: -13, offset: 7, shift: -90, rot: 0 },
+    { width: 284, dur: 19, delay: -2, offset: 10, shift: 50, rot: 0 },
+    { width: 296, dur: 27, delay: -6, offset: 2, shift: -50, rot: 0 },
+    { width: 280, dur: 21, delay: -15, offset: 5, shift: 90, rot: 0 }
+  ];
+
+  function makeCard(item, index) {
+    var card = document.createElement("article");
+    card.className = "card";
+    /* 轻微随机倾斜，像贴在墙上的便签 */
+    card.style.setProperty("--ry", ((index % 5) - 2) * 3 + "deg");
+    card.style.setProperty("--rz", ((index % 4) - 1.5) * 1.6 + "deg");
+
+    var name = document.createElement("h3");
+    name.className = "name";
+    name.textContent = item.name;
+
+    var quote = document.createElement("p");
+    quote.className = "quote";
+    quote.textContent = "“" + item.quote + "”";
+
+    card.appendChild(name);
+    card.appendChild(quote);
+    return card;
+  }
+
+  var wall = document.getElementById("wall");
+
+  COLUMNS.forEach(function (spec) {
+    var col = document.createElement("div");
+    col.className = "col";
+    col.style.setProperty("--w", spec.width + "px");
+    col.style.setProperty("--dur", spec.dur + "s");
+    col.style.setProperty("--delay", spec.delay + "s");
+    col.style.setProperty("--rot", spec.rot + "deg");
+    col.style.marginTop = spec.shift + "px";
+
+    /* 每列从不同位置开始，避免左右出现重复卡片；复制两份配合 -50% 位移实现无缝循环 */
+    var ordered = QUOTES.slice(spec.offset).concat(QUOTES.slice(0, spec.offset));
+    for (var copy = 0; copy < 2; copy++) {
+      ordered.forEach(function (item, i) {
+        col.appendChild(makeCard(item, i + spec.width));
+      });
+    }
+    wall.appendChild(col);
+  });
+
+  requestAnimationFrame(function () { wall.classList.add("is-ready"); });
+
+  /* 鼠标视差：整墙反向轻微位移 */
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    var tx = 0, ty = 0, cx = 0, cy = 0, ticking = false;
+
+    function render() {
+      cx += (tx - cx) * .08;
+      cy += (ty - cy) * .08;
+      wall.style.setProperty("--mx", cx.toFixed(2) + "px");
+      wall.style.setProperty("--my", cy.toFixed(2) + "px");
+      if (Math.abs(tx - cx) > .1 || Math.abs(ty - cy) > .1) {
+        requestAnimationFrame(render);
+      } else {
+        ticking = false;
+      }
+    }
+
+    window.addEventListener("pointermove", function (e) {
+      tx = (e.clientX / window.innerWidth - .5) * -8;
+      ty = (e.clientY / window.innerHeight - .5) * -5;
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(render);
+      }
+    }, { passive: true });
+  }
+</script>
+
+<script>
+/* 海浪背景：WebGL2 域扭曲 + fbm 噪声，取自 WavyBackground 组件（同参数、同色板） */
+(function () {
+  var canvas = document.getElementById("bg-canvas");
+  if (!canvas) return;
+
+  var gl = canvas.getContext("webgl2", { alpha: true });
+  if (!gl) return; /* 不支持 WebGL2 时沿用 CSS 渐变背景 */
+
+  /* 浅蓝色板：最暗一档 alpha=0，透出底层浅蓝渐变 */
+  var SEA_COLORS = [
+    [0.18, 0.45, 0.70], [0.22, 0.50, 0.74], [0.26, 0.55, 0.78], [0.30, 0.60, 0.81],
+    [0.34, 0.65, 0.84], [0.38, 0.70, 0.87], [0.42, 0.74, 0.89], [0.46, 0.78, 0.91],
+    [0.50, 0.81, 0.93], [0.55, 0.84, 0.95], [0.60, 0.87, 0.97], [0.65, 0.89, 0.98],
+    [0.70, 0.91, 0.99], [0.75, 0.93, 0.99], [0.80, 0.95, 1.00], [0.85, 0.96, 1.00],
+    [0.89, 0.97, 1.00], [0.92, 0.98, 1.00], [0.95, 0.99, 1.00], [0.97, 1.00, 1.00]
+  ];
+
+  var paletteSrc = SEA_COLORS.map(function (c) {
+    return "vec3(" + c[0] + ", " + c[1] + ", " + c[2] + ")";
+  }).join(",\n  ");
+
+  var FS = [
+    "#version 300 es",
+    "precision highp float;",
+    "out vec4 outColor;",
+    "uniform vec2 uResolution;",
+    "uniform float uTime;",
+    "#define NUM_COLORS 20",
+    "vec3 seaColors[NUM_COLORS] = vec3[](",
+    "  " + paletteSrc,
+    ");",
+    "vec3 permute(vec3 x) { return mod(((x * 34.0) + 1.0) * x, 289.0); }",
+    "float noise2D(vec2 v) {",
+    "  const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);",
+    "  vec2 i = floor(v + dot(v, C.yy));",
+    "  vec2 x0 = v - i + dot(i, C.xx);",
+    "  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);",
+    "  vec4 x12 = x0.xyxy + C.xxzz;",
+    "  x12.xy -= i1;",
+    "  i = mod(i, 289.0);",
+    "  vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));",
+    "  vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.0);",
+    "  m = m * m;",
+    "  m = m * m;",
+    "  vec3 x = 2.0 * fract(p * C.www) - 1.0;",
+    "  vec3 h = abs(x) - 0.5;",
+    "  vec3 ox = floor(x + 0.5);",
+    "  vec3 a0 = x - ox;",
+    "  m *= 1.792843 - 0.853734 * (a0 * a0 + h * h);",
+    "  vec3 g;",
+    "  g.x = a0.x * x0.x + h.x * x0.y;",
+    "  g.yz = a0.yz * x12.xz + h.yz * x12.yw;",
+    "  return 130.0 * dot(m, g);",
+    "}",
+    "float fbm(vec2 st) {",
+    "  float value = 0.0;",
+    "  float amplitude = 0.5;",
+    "  float freq = 1.0;",
+    "  for (int i = 0; i < 10; i++) {",
+    "    value += amplitude * noise2D(st * freq);",
+    "    freq *= 2.0;",
+    "    amplitude *= 0.5;",
+    "  }",
+    "  return value;",
+    "}",
+    "void main() {",
+    "  vec2 uv = (gl_FragCoord.xy / uResolution.xy) * 2.0 - 1.0;",
+    "  uv.x *= uResolution.x / uResolution.y;",
+    "  uv *= 0.3;",
+    "  float t = uTime * 0.25;",
+    "  float waveAmp = 0.2 + 0.15 * noise2D(vec2(t, 27.7));",
+    "  uv.x += waveAmp * sin(uv.y * 4.0 + t);",
+    "  uv.y += waveAmp * sin(uv.x * 4.0 - t);",
+    "  float r = length(uv);",
+    "  float angle = atan(uv.y, uv.x);",
+    "  float swirlStrength = 1.2 * (1.0 - smoothstep(0.0, 1.0, r));",
+    "  angle += swirlStrength * sin(uTime + r * 5.0);",
+    "  uv = vec2(cos(angle), sin(angle)) * r;",
+    "  float n = fbm(uv);",
+    "  n += 0.2 * sin(t + n * 3.0);",
+    "  float noiseVal = 0.5 * (n + 1.0);",
+    "  float idx = clamp(noiseVal, 0.0, 1.0) * float(NUM_COLORS - 1);",
+    "  int iLow = int(floor(idx));",
+    "  int iHigh = int(min(float(iLow + 1), float(NUM_COLORS - 1)));",
+    "  float f = fract(idx);",
+    "  vec3 color = mix(seaColors[iLow], seaColors[iHigh], f);",
+    "  outColor = (iLow == 0 && iHigh == 0) ? vec4(color, 0.0) : vec4(color, 1.0);",
+    "}"
+  ].join("\n");
+
+  var VS = [
+    "#version 300 es",
+    "precision mediump float;",
+    "in vec2 aPosition;",
+    "void main() { gl_Position = vec4(aPosition, 0.0, 1.0); }"
+  ].join("\n");
+
+  function compile(type, src) {
+    var shader = gl.createShader(type);
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error("shader error:", gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+      return null;
+    }
+    return shader;
+  }
+
+  var vs = compile(gl.VERTEX_SHADER, VS);
+  var fs = compile(gl.FRAGMENT_SHADER, FS);
+  if (!vs || !fs) return;
+
+  var program = gl.createProgram();
+  gl.attachShader(program, vs);
+  gl.attachShader(program, fs);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error("link error:", gl.getProgramInfoLog(program));
+    return;
+  }
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.clearColor(0, 0, 0, 0);
+  gl.useProgram(program);
+
+  var vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  var vbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    -1, -1, 1, -1, -1, 1,
+    -1, 1, 1, -1, 1, 1
+  ]), gl.STATIC_DRAW);
+  var aPos = gl.getAttribLocation(program, "aPosition");
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+  var uResolution = gl.getUniformLocation(program, "uResolution");
+  var uTime = gl.getUniformLocation(program, "uTime");
+  var startTime = performance.now();
+
+  function resize() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+
+  function frame() {
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.useProgram(program);
+    gl.bindVertexArray(vao);
+    gl.uniform2f(uResolution, canvas.width, canvas.height);
+    gl.uniform1f(uTime, (performance.now() - startTime) * 0.001);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    requestAnimationFrame(frame);
+  }
+
+  resize();
+  frame();
+  window.addEventListener("resize", resize);
+})();
+</script>
+</body>
+</html>

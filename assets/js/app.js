@@ -388,6 +388,8 @@
 
   function currentPanel() {
     if (!rail) return 0;
+    /* 已滚到轨道最右端时，直接认定为最后一块（留言），避免末块因对齐误差被误判 */
+    if (rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 2) return panels.length - 1;
     var best = 0;
     var bestDist = Infinity;
     panels.forEach(function (p, i) {

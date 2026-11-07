@@ -1259,6 +1259,8 @@ body.is-revealed .intro-meta { opacity: 1; }
 .rail-wrap { position: relative; }
 
 .rail {
+  /* 末块左侧对齐所需的右侧留白：保证最后一块（留言）也能被箭头完整切到 */
+  --panel-w: min(78vw, 1120px);
   display: flex;
   gap: 22px;
   overflow-x: auto;
@@ -1266,6 +1268,7 @@ body.is-revealed .intro-meta { opacity: 1; }
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   padding: 4px var(--pad) 18px;
+  padding-right: max(var(--pad), calc(100vw - var(--panel-w)));
   scrollbar-width: none;
   -ms-overflow-style: none;
   outline: none;
@@ -1274,7 +1277,7 @@ body.is-revealed .intro-meta { opacity: 1; }
 
 .panel {
   position: relative;
-  flex: 0 0 min(78vw, 1120px);
+  flex: 0 0 var(--panel-w);
   min-height: clamp(560px, 66vh, 720px);
   scroll-snap-align: start;
   border: 1px solid var(--day-line);
@@ -2111,7 +2114,7 @@ body.is-revealed .intro-meta { opacity: 1; }
 @media (max-width: 1100px) {
   .scene-copies { left: 7vw; width: 56vw; }
   .year-ghost { opacity: .55; }
-  .panel { flex-basis: 84vw; }
+  .rail { --panel-w: 84vw; }
   .panel-index { flex-basis: 54vw; }
   .guest-grid { gap: 22px; }
 }
@@ -2187,7 +2190,8 @@ body.is-revealed .intro-meta { opacity: 1; }
 
   .panels-head { flex-direction: column; align-items: flex-start; gap: 22px; }
   .panels-side { max-width: 100%; }
-  .panel { flex-basis: 88vw; min-height: 600px; }
+  .rail { --panel-w: 88vw; }
+  .panel { min-height: 600px; }
   .panel-index { flex-basis: 80vw; }
   .panel-inner { padding: 24px; }
 
@@ -2222,7 +2226,7 @@ body.is-revealed .intro-meta { opacity: 1; }
 @media (max-width: 520px) {
   .brand-lockup { height: 34px; }
   .scene-copy .lede { display: none; }
-  .panel { flex-basis: 91vw; }
+  .rail { --panel-w: 91vw; }
   .panel-index { flex-basis: 88vw; }
   .panel-head { gap: 12px; }
   .panel-head h2 { font-size: 22px; }
@@ -3177,4 +3181,72 @@ body.is-revealed .intro-meta { opacity: 1; }
     transition: none !important;
   }
   .btn-duo .duo > span { transition: none; }
+}
+
+/* =========================================================
+   地图板块：留言迁出后独占一屏，放大地图、收窄信息卡
+   ========================================================= */
+
+@media (min-width: 861px) {
+  .panel.panel-map {
+    flex-basis: min(84vw, 1240px);
+  }
+  .panel-map .map-grid {
+    grid-template-columns: minmax(0, 1.75fr) minmax(260px, .75fr);
+    gap: clamp(20px, 2.4vw, 34px);
+  }
+  .panel-map .map-canvas {
+    min-height: clamp(340px, 50vh, 600px);
+  }
+  .panel-map .map-pin i { width: 10px; height: 10px; }
+  .panel-map .map-pin span { font-size: 11px; }
+}
+
+/* =========================================================
+   留言独立页（guestbook.html）
+   ========================================================= */
+
+.guestbook-hero {
+  min-height: clamp(440px, 56vh, 640px);
+}
+
+.guestbook-body {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(48px, 7vh, 84px) var(--pad) 110px;
+}
+
+.guestbook-body .guest-grid {
+  flex: none;
+  align-items: start;
+  gap: clamp(30px, 4.5vw, 64px);
+}
+
+.guestbook-body .guest-form {
+  padding: clamp(24px, 3vw, 38px);
+  border: 1px solid var(--day-line);
+  background: rgba(255, 255, 255, .46);
+  box-shadow: 0 22px 48px -42px rgba(28, 47, 55, .5);
+}
+
+.guestbook-body .guest-stream {
+  border-left-color: var(--day-line);
+  padding-left: clamp(24px, 3vw, 48px);
+}
+
+.guestbook-body .guest-list {
+  max-height: min(52vh, 520px);
+  min-height: 240px;
+}
+
+@media (max-width: 860px) {
+  .guestbook-hero { min-height: 400px; }
+  .guestbook-body { padding-top: 40px; padding-bottom: 80px; }
+  .guestbook-body .guest-form { padding: 22px 20px 24px; }
+  .guestbook-body .guest-stream {
+    border-left: 0;
+    border-top: 1px solid var(--day-line);
+    padding-left: 0;
+  }
+  .guestbook-body .guest-list { max-height: 340px; min-height: 0; }
 }
