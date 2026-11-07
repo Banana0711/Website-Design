@@ -403,6 +403,8 @@
     if (!rail) return;
     var i = currentPanel();
     if (railIndex) railIndex.textContent = String(i).padStart(2, '0') + ' / ' + String(panels.length - 1).padStart(2, '0');
+    /* 停在地图块时隐藏相邻留言块，避免右侧露出留言卡片 */
+    document.body.classList.toggle('at-map', i === 4);
     if (railProgress) railProgress.style.transform = 'scale(' + (1 + i * 0.12) + ')';
     if (railPrev) railPrev.disabled = i <= 0;
     if (railNext) railNext.disabled = i >= panels.length - 1;
