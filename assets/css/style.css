@@ -3250,3 +3250,14 @@ body.is-revealed .intro-meta { opacity: 1; }
   }
   .guestbook-body .guest-list { max-height: 340px; min-height: 0; }
 }
+
+/* 留言板块内的证言墙 iframe */
+.wall-frame {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 320px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+}

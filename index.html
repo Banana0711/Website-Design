@@ -439,38 +439,10 @@
               </div>
             </header>
 
-            <div class="guest-grid">
-              <form class="guest-form" id="guestForm" autocomplete="off">
-                <label class="field">
-                  <span>你的名字</span>
-                  <input id="guestName" name="name" type="text" maxlength="12" placeholder="一位水之子" required>
-                </label>
-                <label class="field">
-                  <span>想说的话 <em id="charCount">0 / 60</em></span>
-                  <textarea id="guestText" name="text" maxlength="60" rows="3" placeholder="写下你与河海的一滴水……" required></textarea>
-                </label>
-                <button class="btn-send btn-duo" type="submit">
-                  <span class="duo">
-                    <span class="duo-a">投入河中</span>
-                    <span class="duo-b" aria-hidden="true">投入河中</span>
-                  </span>
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
-                </button>
-                <p class="form-note">留言保存在本机浏览器中，仅用于赛事演示。</p>
-              </form>
-
-              <div class="guest-stream">
-                <div class="stream-head">
-                  <span>最近的漂流瓶</span>
-                  <i></i>
-                  <span id="guestCount">0 条</span>
-                </div>
-                <ul class="guest-list" id="guestList"></ul>
-              </div>
-            </div>
+            <iframe class="wall-frame" src="wall.html?embed=1" title="河海留言墙" loading="lazy"></iframe>
 
             <footer class="panel-foot">
-              <span class="foot-note">伪后端 · localStorage 持久化</span>
+              <span class="foot-note">悬停可暂停 · 留言墙上流动的照片式证言</span>
             </footer>
           </div>
         </article>
