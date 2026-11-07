@@ -238,8 +238,11 @@
   body.embed .brand,
   body.embed .fade,
   body.embed .vignette { display: none; }
-  html.embed,
-  body.embed { background: transparent; }
+  html.embed { background: #eaf5ff; }
+  body.embed {
+    background: radial-gradient(120% 90% at 50% 30%,
+      #eaf5ff 0%, #cfe8ff 45%, #b4dafa 100%);
+  }
   body.embed .stage { position: absolute; inset: 0; perspective: 900px; }
   body.embed .wall {
     gap: 18px;
