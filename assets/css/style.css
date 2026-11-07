@@ -905,13 +905,6 @@ body.is-revealed .intro-meta { opacity: 1; }
   height: 240px;
 }
 
-.rail-title {
-  writing-mode: vertical-rl;
-  font-size: 8px;
-  letter-spacing: .3em;
-  color: var(--muted);
-}
-
 .rail-track {
   position: relative;
   width: 1px;
@@ -2187,7 +2180,6 @@ body.at-map .panel-guestbook { visibility: hidden; }
   .scene-copy .note { font-size: 11.5px; }
   .year-ghost { display: none; }
   .journey-rail { right: 16px; transform: translateY(-50%) scale(.9); }
-  .rail-title { display: none; }
   .water { height: 40%; }
   .journey-hint { bottom: 3vh; font-size: 8px; letter-spacing: .22em; }
 
@@ -2972,7 +2964,6 @@ body.at-map .panel-guestbook { visibility: hidden; }
 
 .chapter-cn { font-size: 15px; }
 .chapter-en { font-size: 10px; }
-.rail-title,
 .rail-years { font-size: 11px; }
 .journey-hint { font-size: 11px; }
 
@@ -3049,16 +3040,8 @@ body.at-map .panel-guestbook { visibility: hidden; }
   opacity: .1;
 }
 
-.panels .section-word {
-  top: clamp(48px, 9vh, 110px);
-  right: var(--pad);
-  color: rgba(166, 129, 80, .2);
-  opacity: 1;
-}
-
 @media (max-width: 1100px) {
-  .journey-coda .section-word,
-  .panels .section-word { display: none; }
+  .journey-coda .section-word { display: none; }
 }
 
 /* ---------- 2. 双标签按钮（Dual-label Button） ---------- */
@@ -3142,7 +3125,6 @@ body.at-map .panel-guestbook { visibility: hidden; }
   opacity: 1;
   filter: blur(0);
 }
-.rail-title { font-family: var(--ui); }
 
 /* ---------- 6. 页脚：波浪线稿与邀请语 ---------- */
 
