@@ -261,6 +261,16 @@
   body.embed .col:first-child,
   body.embed .col:last-child { filter: none; opacity: 1; }
   body.embed .card { box-shadow: 0 6px 16px rgba(0, 40, 80, .16); }
+  /* 压平 3D 承载面：列动画交给合成线程，避免每帧重投影几十张卡片 */
+  body.embed .wall { transform-style: flat; }
+  body.embed .card {
+    transform: rotate(var(--rz, 0deg));
+    transform-style: flat;
+    transition: background .2s ease, border-color .2s ease;
+  }
+  body.embed .card:hover {
+    transform: rotate(var(--rz, 0deg)) scale(1.02);
+  }
   /* 不在留言块时暂停列动画 */
   .wall.is-paused .col { animation-play-state: paused; }
   body.embed .name { font-size: 13.5px; }
