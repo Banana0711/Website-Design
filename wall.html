@@ -69,6 +69,7 @@
     --mx: 0px;
     --my: 0px;
     display: flex;
+    align-items: flex-start; /* 列高必须等于自身内容高度，-50% 循环位移才能严丝合缝 */
     gap: 28px;
     transform:
       translate3d(calc(-70px + var(--mx)), calc(-50px + var(--my)), 0)
