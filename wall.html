@@ -45,6 +45,17 @@
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.9'/></svg>");
   }
 
+  /* WebGL 海浪背景，铺在渐变底层之上、卡片墙之下 */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 0;
+    pointer-events: none;
+  }
+
   .stage {
     position: fixed;
     inset: 0;
@@ -187,6 +198,7 @@
 </style>
 </head>
 <body>
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
   <main class="stage">
     <div class="wall" id="wall" aria-label="河海大学证言墙"></div>
   </main>
@@ -292,6 +304,172 @@
       }
     }, { passive: true });
   }
+</script>
+
+<script>
+/* 海浪背景：WebGL2 域扭曲 + fbm 噪声，取自 WavyBackground 组件（同参数、同色板） */
+(function () {
+  var canvas = document.getElementById("bg-canvas");
+  if (!canvas) return;
+
+  var gl = canvas.getContext("webgl2", { alpha: true });
+  if (!gl) return; /* 不支持 WebGL2 时沿用 CSS 渐变背景 */
+
+  var SEA_COLORS = [
+    [0.0, 0.02, 0.05], [0.0, 0.04, 0.08], [0.0, 0.06, 0.12], [0.0, 0.08, 0.18],
+    [0.0, 0.1, 0.24],  [0.0, 0.14, 0.32], [0.0, 0.2, 0.4],   [0.0, 0.24, 0.48],
+    [0.0, 0.3, 0.55],  [0.05, 0.35, 0.6], [0.08, 0.4, 0.65], [0.1, 0.45, 0.7],
+    [0.15, 0.5, 0.75], [0.2, 0.58, 0.8],  [0.25, 0.65, 0.85],[0.3, 0.72, 0.9],
+    [0.4, 0.78, 0.92], [0.5, 0.85, 0.95], [0.7, 0.9, 0.97],  [0.85, 0.95, 1.0]
+  ];
+
+  var paletteSrc = SEA_COLORS.map(function (c) {
+    return "vec3(" + c[0] + ", " + c[1] + ", " + c[2] + ")";
+  }).join(",\n  ");
+
+  var FS = [
+    "#version 300 es",
+    "precision highp float;",
+    "out vec4 outColor;",
+    "uniform vec2 uResolution;",
+    "uniform float uTime;",
+    "#define NUM_COLORS 20",
+    "vec3 seaColors[NUM_COLORS] = vec3[](",
+    "  " + paletteSrc,
+    ");",
+    "vec3 permute(vec3 x) { return mod(((x * 34.0) + 1.0) * x, 289.0); }",
+    "float noise2D(vec2 v) {",
+    "  const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);",
+    "  vec2 i = floor(v + dot(v, C.yy));",
+    "  vec2 x0 = v - i + dot(i, C.xx);",
+    "  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);",
+    "  vec4 x12 = x0.xyxy + C.xxzz;",
+    "  x12.xy -= i1;",
+    "  i = mod(i, 289.0);",
+    "  vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));",
+    "  vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.0);",
+    "  m = m * m;",
+    "  m = m * m;",
+    "  vec3 x = 2.0 * fract(p * C.www) - 1.0;",
+    "  vec3 h = abs(x) - 0.5;",
+    "  vec3 ox = floor(x + 0.5);",
+    "  vec3 a0 = x - ox;",
+    "  m *= 1.792843 - 0.853734 * (a0 * a0 + h * h);",
+    "  vec3 g;",
+    "  g.x = a0.x * x0.x + h.x * x0.y;",
+    "  g.yz = a0.yz * x12.xz + h.yz * x12.yw;",
+    "  return 130.0 * dot(m, g);",
+    "}",
+    "float fbm(vec2 st) {",
+    "  float value = 0.0;",
+    "  float amplitude = 0.5;",
+    "  float freq = 1.0;",
+    "  for (int i = 0; i < 10; i++) {",
+    "    value += amplitude * noise2D(st * freq);",
+    "    freq *= 2.0;",
+    "    amplitude *= 0.5;",
+    "  }",
+    "  return value;",
+    "}",
+    "void main() {",
+    "  vec2 uv = (gl_FragCoord.xy / uResolution.xy) * 2.0 - 1.0;",
+    "  uv.x *= uResolution.x / uResolution.y;",
+    "  uv *= 0.3;",
+    "  float t = uTime * 0.25;",
+    "  float waveAmp = 0.2 + 0.15 * noise2D(vec2(t, 27.7));",
+    "  uv.x += waveAmp * sin(uv.y * 4.0 + t);",
+    "  uv.y += waveAmp * sin(uv.x * 4.0 - t);",
+    "  float r = length(uv);",
+    "  float angle = atan(uv.y, uv.x);",
+    "  float swirlStrength = 1.2 * (1.0 - smoothstep(0.0, 1.0, r));",
+    "  angle += swirlStrength * sin(uTime + r * 5.0);",
+    "  uv = vec2(cos(angle), sin(angle)) * r;",
+    "  float n = fbm(uv);",
+    "  n += 0.2 * sin(t + n * 3.0);",
+    "  float noiseVal = 0.5 * (n + 1.0);",
+    "  float idx = clamp(noiseVal, 0.0, 1.0) * float(NUM_COLORS - 1);",
+    "  int iLow = int(floor(idx));",
+    "  int iHigh = int(min(float(iLow + 1), float(NUM_COLORS - 1)));",
+    "  float f = fract(idx);",
+    "  vec3 color = mix(seaColors[iLow], seaColors[iHigh], f);",
+    "  outColor = (iLow == 0 && iHigh == 0) ? vec4(color, 0.0) : vec4(color, 1.0);",
+    "}"
+  ].join("\n");
+
+  var VS = [
+    "#version 300 es",
+    "precision mediump float;",
+    "in vec2 aPosition;",
+    "void main() { gl_Position = vec4(aPosition, 0.0, 1.0); }"
+  ].join("\n");
+
+  function compile(type, src) {
+    var shader = gl.createShader(type);
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error("shader error:", gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+      return null;
+    }
+    return shader;
+  }
+
+  var vs = compile(gl.VERTEX_SHADER, VS);
+  var fs = compile(gl.FRAGMENT_SHADER, FS);
+  if (!vs || !fs) return;
+
+  var program = gl.createProgram();
+  gl.attachShader(program, vs);
+  gl.attachShader(program, fs);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error("link error:", gl.getProgramInfoLog(program));
+    return;
+  }
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.clearColor(0, 0, 0, 0);
+  gl.useProgram(program);
+
+  var vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  var vbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    -1, -1, 1, -1, -1, 1,
+    -1, 1, 1, -1, 1, 1
+  ]), gl.STATIC_DRAW);
+  var aPos = gl.getAttribLocation(program, "aPosition");
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+  var uResolution = gl.getUniformLocation(program, "uResolution");
+  var uTime = gl.getUniformLocation(program, "uTime");
+  var startTime = performance.now();
+
+  function resize() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+
+  function frame() {
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.useProgram(program);
+    gl.bindVertexArray(vao);
+    gl.uniform2f(uResolution, canvas.width, canvas.height);
+    gl.uniform1f(uTime, (performance.now() - startTime) * 0.001);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    requestAnimationFrame(frame);
+  }
+
+  resize();
+  frame();
+  window.addEventListener("resize", resize);
+})();
 </script>
 </body>
 </html>
