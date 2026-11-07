@@ -3187,22 +3187,50 @@ body.at-map .panel-guestbook { visibility: hidden; }
 }
 
 /* =========================================================
-   地图板块：留言迁出后独占一屏，放大地图、收窄信息卡
+   地图板块：留言迁出后独占一屏，地图与右侧校区信息随视口缩放
    ========================================================= */
+
+/* 右侧校区卡片的图片与文字全部使用流体尺寸，随板块宽高自适应 */
+.panel-map .map-grid { gap: clamp(14px, 1.8vw, 24px); }
+.panel-map .map-grid > * { min-width: 0; }
+.panel-map .campus-card { min-height: 0; }
+.panel-map .campus-photo { min-height: clamp(110px, 18vh, 210px); }
+.panel-map .campus-copy {
+  padding: clamp(14px, 1.2vw, 20px) clamp(15px, 1.5vw, 22px) clamp(15px, 1.8vh, 22px);
+}
+.panel-map .campus-copy h3 { font-size: clamp(18px, 1.55vw, 26px); }
+.panel-map .campus-loc { font-size: clamp(9.5px, .72vw, 11.5px); }
+.panel-map .campus-copy > p:nth-of-type(2) {
+  font-size: clamp(11px, .9vw, 13.5px);
+  line-height: 1.75;
+}
+.panel-map .campus-tag { font-size: clamp(8.5px, .62vw, 10.5px) !important; }
 
 @media (min-width: 861px) {
   .panel.panel-map {
     flex-basis: min(84vw, 1240px);
   }
   .panel-map .map-grid {
-    grid-template-columns: minmax(0, 1.75fr) minmax(260px, .75fr);
-    gap: clamp(20px, 2.4vw, 34px);
+    grid-template-columns: minmax(0, 1.6fr) minmax(clamp(240px, 22vw, 360px), .85fr);
+    align-items: stretch;
   }
   .panel-map .map-canvas {
-    min-height: clamp(340px, 50vh, 600px);
+    min-height: clamp(300px, 46vh, 560px);
   }
+  /* 卡片随地图高度拉伸，照片吃掉剩余高度，窗口变化时同步缩放 */
+  .panel-map .campus-photo { height: auto; flex: 1 1 auto; }
   .panel-map .map-pin i { width: 10px; height: 10px; }
   .panel-map .map-pin span { font-size: 11px; }
+}
+
+@media (max-width: 860px) {
+  .panel-map .map-canvas { min-height: clamp(220px, 34vh, 320px); }
+  .panel-map .campus-photo {
+    height: auto;
+    aspect-ratio: 16 / 10;
+    min-height: 0;
+    flex: none;
+  }
 }
 
 /* =========================================================
