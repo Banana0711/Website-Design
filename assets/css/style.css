@@ -1291,6 +1291,9 @@ body.is-revealed .intro-meta { opacity: 1; }
 }
 .panel.in { opacity: 1; transform: translateY(0); }
 
+/* 地图块独占一屏，右侧不露出下一块留言 */
+.panel-map { flex-basis: min(1120px, calc(100vw - 2 * var(--pad))); }
+
 .panel::before {
   content: "";
   position: absolute;
