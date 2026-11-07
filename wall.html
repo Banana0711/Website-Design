@@ -65,11 +65,16 @@
   }
 
   .brand-name {
-    font-size: 26px;
-    font-weight: 600;
-    letter-spacing: .18em;
-    color: #0078BF;
+    font-family: "华文行楷", "STXingkai", "华文隶书", "STLiti", "KaiTi", serif;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: .1em;
     white-space: nowrap;
+    background: linear-gradient(180deg, #4FA8E0 0%, #0069AE 50%, #003C6E 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 6px rgba(0, 45, 85, .5));
   }
 
   /* WebGL 海浪背景，铺在渐变底层之上、卡片墙之下 */
@@ -219,7 +224,7 @@
   @media (max-width: 640px) {
     .brand { top: 14px; left: 14px; gap: 10px; }
     .brand img { width: 46px; height: 46px; }
-    .brand-name { font-size: 18px; letter-spacing: .12em; }
+    .brand-name { font-size: 20px; letter-spacing: .06em; }
     .wall { scale: .9; }
     .col:nth-child(n + 3) { display: none; }
     .col { width: 78vw; }
