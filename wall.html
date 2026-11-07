@@ -48,24 +48,27 @@
   /* 左上角校徽：固定层级高于卡片墙与渐隐层，滚动时不会被遮挡 */
   .brand {
     position: fixed;
-    top: 22px;
-    left: 24px;
+    top: 24px;
+    left: 26px;
     z-index: 10;
-    display: grid;
-    place-items: center;
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, .78);
-    border: 1px solid rgba(255, 255, 255, .95);
-    box-shadow: 0 10px 26px rgba(0, 60, 120, .2);
-    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    gap: 14px;
   }
 
   .brand img {
-    width: 72px;
-    height: 72px;
+    width: 64px;
+    height: 64px;
     display: block;
+    filter: drop-shadow(0 4px 10px rgba(0, 60, 120, .2));
+  }
+
+  .brand-name {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: .18em;
+    color: #005BAC;
+    white-space: nowrap;
   }
 
   /* WebGL 海浪背景，铺在渐变底层之上、卡片墙之下 */
@@ -213,8 +216,9 @@
   }
 
   @media (max-width: 640px) {
-    .brand { width: 58px; height: 58px; top: 14px; left: 14px; }
-    .brand img { width: 42px; height: 42px; }
+    .brand { top: 14px; left: 14px; gap: 10px; }
+    .brand img { width: 46px; height: 46px; }
+    .brand-name { font-size: 18px; letter-spacing: .12em; }
     .wall { scale: .9; }
     .col:nth-child(n + 3) { display: none; }
     .col { width: 78vw; }
@@ -227,6 +231,7 @@
   <canvas id="bg-canvas" aria-hidden="true"></canvas>
   <a class="brand" href="index.html" aria-label="河海大学">
     <img src="assets/img/emblem.png" alt="河海大学校徽">
+    <span class="brand-name">河海大学</span>
   </a>
   <main class="stage">
     <div class="wall" id="wall" aria-label="河海大学证言墙"></div>
