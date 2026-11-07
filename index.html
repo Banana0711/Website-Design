@@ -35,7 +35,7 @@
     <a href="#panels" data-nav="people" data-panel="2">人物</a>
     <a href="#panels" data-nav="alumni" data-panel="3">校友</a>
     <a href="#panels" data-nav="map" data-panel="4">地图</a>
-    <a href="guestbook.html">留言</a>
+    <a href="#panels" data-nav="guestbook" data-panel="5">留言</a>
   </nav>
 
   <button class="nav-toggle" id="navToggle" aria-label="打开导航" aria-expanded="false">
@@ -245,7 +245,7 @@
               <li><a href="#panels" data-goto="2"><span>02</span>人物<em>把一生交给水的人</em></a></li>
               <li><a href="#panels" data-goto="3"><span>03</span>校友<em>散作满天星</em></a></li>
               <li><a href="#panels" data-goto="4"><span>04</span>校园地图<em>三座校园，一张水网</em></a></li>
-              <li><a href="guestbook.html"><span>05</span>留言<em>把话留给河海</em></a></li>
+              <li><a href="#panels" data-goto="5"><span>05</span>留言<em>把话留给河海</em></a></li>
             </ol>
             <p class="index-hint">横向拖拽 <span aria-hidden="true">→</span></p>
           </div>
@@ -416,12 +416,31 @@
           </div>
         </article>
 
+        <!-- 05 留言 -->
+        <article class="panel panel-guestbook" data-index="5">
+          <div class="panel-inner">
+            <header class="panel-head">
+              <span class="panel-no">05</span>
+              <div>
+                <p class="panel-kicker">GUESTBOOK · 留言</p>
+                <h2>把话留给河海</h2>
+              </div>
+            </header>
+
+            <iframe class="wall-frame" src="guestbook.html?embed=1" title="河海留言墙" loading="lazy"></iframe>
+
+            <footer class="panel-foot">
+              <span class="foot-note">悬停可暂停 · 留言墙上流动的照片式证言</span>
+            </footer>
+          </div>
+        </article>
+
       </div>
     </div>
 
     <div class="rail-progress" aria-hidden="true">
       <i id="railProgress"></i>
-      <span id="railIndex">00 / 04</span>
+      <span id="railIndex">00 / 05</span>
     </div>
   </section>
 
@@ -447,7 +466,7 @@
       <a href="#panels" data-foot-goto="2">人物</a>
       <a href="#panels" data-foot-goto="3">校友</a>
       <a href="#panels" data-foot-goto="4">地图</a>
-      <a href="guestbook.html">留言</a>
+      <a href="#panels" data-foot-goto="5">留言</a>
     </nav>
   </div>
   <div class="foot-bottom">
