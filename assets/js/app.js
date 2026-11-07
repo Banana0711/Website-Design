@@ -399,12 +399,25 @@
     return best;
   }
 
+  var wallFrame = document.querySelector('.wall-frame');
+
+  function signalWall(active) {
+    if (!wallFrame || !wallFrame.contentWindow) return;
+    wallFrame.contentWindow.postMessage(active ? 'wall:resume' : 'wall:pause', '*');
+  }
+
+  if (wallFrame) {
+    wallFrame.addEventListener('load', function () { signalWall(currentPanel() === 5); });
+  }
+
   function updateRailUI() {
     if (!rail) return;
     var i = currentPanel();
     if (railIndex) railIndex.textContent = String(i).padStart(2, '0') + ' / ' + String(panels.length - 1).padStart(2, '0');
     /* 停在地图块时隐藏相邻留言块，避免右侧露出留言卡片 */
     document.body.classList.toggle('at-map', i === 4);
+    /* 只有停留在留言块时才让内嵌卡片墙继续动画，其余时间暂停以省性能 */
+    signalWall(i === 5);
     if (railProgress) railProgress.style.transform = 'scale(' + (1 + i * 0.12) + ')';
     if (railPrev) railPrev.disabled = i <= 0;
     if (railNext) railNext.disabled = i >= panels.length - 1;

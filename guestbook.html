@@ -257,6 +257,12 @@
     background: rgba(0, 91, 172, .88) !important;
   }
   body.embed .card:hover { background: rgba(0, 108, 200, .96) !important; }
+  /* 嵌入模式削减开销：去掉边缘列模糊与重投影，只保留轻量阴影 */
+  body.embed .col:first-child,
+  body.embed .col:last-child { filter: none; opacity: 1; }
+  body.embed .card { box-shadow: 0 6px 16px rgba(0, 40, 80, .16); }
+  /* 不在留言块时暂停列动画 */
+  .wall.is-paused .col { animation-play-state: paused; }
   body.embed .name { font-size: 13.5px; }
   body.embed .quote { font-size: 12.5px; }
 </style>
@@ -358,8 +364,14 @@
 
   requestAnimationFrame(function () { wall.classList.add("is-ready"); });
 
-  /* 鼠标视差：整墙反向轻微位移 */
-  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  /* 由主站通知暂停/恢复：不在留言块时停止列动画 */
+  window.addEventListener("message", function (e) {
+    if (e.data === "wall:pause") wall.classList.add("is-paused");
+    else if (e.data === "wall:resume") wall.classList.remove("is-paused");
+  });
+
+  /* 鼠标视差：整墙反向轻微位移（嵌入模式关闭，避免整墙每帧重绘） */
+  if (!EMBED && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     var tx = 0, ty = 0, cx = 0, cy = 0, ticking = false;
 
     function render() {
@@ -389,7 +401,7 @@
 /* 海浪背景：WebGL2 域扭曲 + fbm 噪声，取自 WavyBackground 组件（同参数、同色板） */
 (function () {
   var canvas = document.getElementById("bg-canvas");
-  if (!canvas) return;
+  if (!canvas || EMBED) return; /* 嵌入模式不渲染背景，直接使用 CSS 浅蓝渐变 */
 
   var gl = canvas.getContext("webgl2", { alpha: true });
   if (!gl) return; /* 不支持 WebGL2 时沿用 CSS 渐变背景 */
