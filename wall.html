@@ -60,10 +60,10 @@
     display: flex;
     gap: 28px;
     transform:
-      translate3d(var(--mx), var(--my), 0)
+      translate3d(calc(-70px + var(--mx)), calc(-50px + var(--my)), 0)
       rotateX(26deg)
-      rotateZ(-13deg)
-      scale(1.3);
+      rotateZ(45deg)
+      scale(1.6);
     transform-style: preserve-3d;
     opacity: 0;
     transition: opacity .9s ease;
@@ -98,7 +98,7 @@
 
   .card {
     position: relative;
-    padding: 18px 20px 20px;
+    padding: 16px 20px 18px;
     margin-bottom: 18px;
     border: 1px solid var(--card-line);
     border-radius: 18px;
@@ -126,68 +126,17 @@
     box-shadow: 0 26px 54px rgba(0, 10, 24, .5), 0 0 0 1px rgba(111, 200, 255, .12) inset;
   }
 
-  .card-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .avatar {
-    position: relative;
-    flex: 0 0 42px;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    overflow: hidden;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(140deg, #1E74B8, #0B3F6E);
-    font-size: 15px;
+  .name {
+    margin: 0;
+    font-size: 17px;
     font-weight: 600;
-    color: #DCEBFA;
-    border: 1px solid rgba(255, 255, 255, .14);
-  }
-
-  .avatar img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .who {
-    min-width: 0;
-    line-height: 1.25;
-  }
-
-  .who strong {
-    display: block;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: .2px;
+    letter-spacing: .3px;
+    line-height: 1.3;
     color: #F2F7FC;
   }
 
-  .who .handle {
-    font-size: 12px;
-    color: var(--text-dim);
-  }
-
-  .loc {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    color: var(--text-dim);
-    white-space: nowrap;
-  }
-
-  .loc .flag { font-size: 13px; }
-
   .quote {
-    margin: 14px 0 0;
+    margin: 10px 0 0;
     font-size: 15.5px;
     line-height: 1.55;
     color: #DCE8F4;
@@ -223,14 +172,14 @@
   }
 
   @media (max-width: 1024px) {
-    .wall { gap: 22px; scale: 1.05; }
-    .col:nth-child(4) { display: none; }
+    .wall { gap: 22px; scale: 1; }
+    .col:nth-child(n + 5) { display: none; }
     .col { width: 44vw; }
   }
 
   @media (max-width: 640px) {
-    .wall { scale: 1; }
-    .col:nth-child(3) { display: none; }
+    .wall { scale: .9; }
+    .col:nth-child(n + 3) { display: none; }
     .col { width: 78vw; }
     .quote { font-size: 14.5px; }
   }
@@ -247,25 +196,32 @@
 
 <script>
   var QUOTES = [
-    { name: "陈知远", handle: "@zhiyuan", flag: "🇨🇳", place: "CN · 南京", quote: "从长江口到实验室，每一滴水都有答案。", img: "assets/img/avatars/m32.jpg" },
-    { name: "林清越", handle: "@qingyue", flag: "🇨🇳", place: "CN · 苏州", quote: "在这里，学会让数据开口说话。", img: "assets/img/avatars/w44.jpg" },
-    { name: "苏晚舟", handle: "@wanzhou", flag: "🇨🇳", place: "CN · 南京", quote: "百年的闸门一开，青春就流进了江海。", img: "assets/img/avatars/w65.jpg" },
-    { name: "何疏影", handle: "@shuying", flag: "🇨🇳", place: "CN · 扬州", quote: "把论文写在祖国的大江大河上。", img: "assets/img/avatars/w68.jpg" },
-    { name: "顾行舟", handle: "@xingzhou", flag: "🇨🇳", place: "CN · 南通", quote: "模型里的每次涨落，都是真实世界的预演。", img: "assets/img/avatars/m75.jpg" },
-    { name: "江语棠", handle: "@yutang", flag: "🇨🇳", place: "CN · 武汉", quote: "在河海，连风都带着水汽的浪漫。", img: "assets/img/avatars/w26.jpg" },
-    { name: "Ade", handle: "@ade", flag: "🇳🇬", place: "NG · Lagos", quote: "这里的江河教会我，水从不拒绝任何人。", img: "assets/img/avatars/m22.jpg" },
-    { name: "沈墨白", handle: "@mobai", flag: "🇨🇳", place: "CN · 杭州", quote: "用一行行代码，给河流做一次数字体检。", img: "assets/img/avatars/m45.jpg" },
-    { name: "陆听澜", handle: "@tinglan", flag: "🇨🇳", place: "CN · 南京", quote: "治水先治心，问渠那得清如许。", img: "assets/img/avatars/w50.jpg" },
-    { name: "Sana", handle: "@sana", flag: "🇵🇰", place: "PK · Lahore", quote: "我想把这里的治水经验带回故乡。", img: "assets/img/avatars/w9.jpg" },
-    { name: "唐见山", handle: "@jianshan", flag: "🇨🇳", place: "CN · 重庆", quote: "从一粒沙，看见一整条河。", img: "assets/img/avatars/m11.jpg" },
-    { name: "Lukas", handle: "@lukas", flag: "🇩🇪", place: "DE · München", quote: "坝体、闸门与水位，每一课都像打开一扇窗。", img: "assets/img/avatars/m3.jpg" }
+    { name: "陈知远", quote: "从长江口到实验室，每一滴水都有答案。" },
+    { name: "林清越", quote: "在这里，学会让数据开口说话。" },
+    { name: "苏晚舟", quote: "百年的闸门一开，青春就流进了江海。" },
+    { name: "何疏影", quote: "把论文写在祖国的大江大河上。" },
+    { name: "顾行舟", quote: "模型里的每次涨落，都是真实世界的预演。" },
+    { name: "江语棠", quote: "在河海，连风都带着水汽的浪漫。" },
+    { name: "Ade", quote: "这里的江河教会我，水从不拒绝任何人。" },
+    { name: "沈墨白", quote: "用一行行代码，给河流做一次数字体检。" },
+    { name: "陆听澜", quote: "治水先治心，问渠那得清如许。" },
+    { name: "Sana", quote: "我想把这里的治水经验带回故乡。" },
+    { name: "唐见山", quote: "从一粒沙，看见一整条河。" },
+    { name: "Lukas", quote: "坝体、闸门与水位，每一课都像打开一扇窗。" }
   ];
 
   var COLUMNS = [
-    { width: 300, dur: 26, delay: -4, offset: 0, shift: -70, rot: 10 },
-    { width: 278, dur: 20, delay: -11, offset: 3, shift: 30, rot: 8 },
-    { width: 312, dur: 24, delay: -7, offset: 6, shift: -120, rot: 12 },
-    { width: 286, dur: 30, delay: -16, offset: 9, shift: 80, rot: 9 }
+    /* 整墙 rotateZ 45°，列内竖直滚动在屏幕上即为右上方 → 左下方 45° 斜流；8 列保证旋转后铺满全屏 */
+    { width: 300, dur: 26, delay: -4, offset: 0, shift: -70, rot: 0 },
+    { width: 278, dur: 20, delay: -11, offset: 3, shift: 30, rot: 0 },
+    { width: 312, dur: 24, delay: -7, offset: 6, shift: -120, rot: 0 },
+    { width: 286, dur: 30, delay: -16, offset: 9, shift: 80, rot: 0 },
+    { width: 294, dur: 22, delay: -9, offset: 1, shift: -30, rot: 0 },
+    { width: 272, dur: 28, delay: -21, offset: 4, shift: 110, rot: 0 },
+    { width: 306, dur: 25, delay: -13, offset: 7, shift: -90, rot: 0 },
+    { width: 284, dur: 19, delay: -2, offset: 10, shift: 50, rot: 0 },
+    { width: 296, dur: 27, delay: -6, offset: 2, shift: -50, rot: 0 },
+    { width: 280, dur: 21, delay: -15, offset: 5, shift: 90, rot: 0 }
   ];
 
   function makeCard(item, index) {
@@ -275,49 +231,15 @@
     card.style.setProperty("--ry", ((index % 5) - 2) * 3 + "deg");
     card.style.setProperty("--rz", ((index % 4) - 1.5) * 1.6 + "deg");
 
-    var head = document.createElement("header");
-    head.className = "card-head";
-
-    var avatar = document.createElement("div");
-    avatar.className = "avatar";
-    var initial = document.createElement("span");
-    initial.textContent = item.name.slice(0, 1);
-    var photo = document.createElement("img");
-    photo.src = item.img;
-    photo.alt = "";
-    photo.loading = "lazy";
-    photo.onerror = function () { photo.remove(); };
-    avatar.appendChild(initial);
-    avatar.appendChild(photo);
-    head.appendChild(avatar);
-
-    var who = document.createElement("div");
-    who.className = "who";
-    var name = document.createElement("strong");
+    var name = document.createElement("h3");
+    name.className = "name";
     name.textContent = item.name;
-    var handle = document.createElement("span");
-    handle.className = "handle";
-    handle.textContent = item.handle;
-    who.appendChild(name);
-    who.appendChild(handle);
-    head.appendChild(who);
-
-    var loc = document.createElement("div");
-    loc.className = "loc";
-    var flag = document.createElement("span");
-    flag.className = "flag";
-    flag.textContent = item.flag;
-    var place = document.createElement("span");
-    place.textContent = item.place;
-    loc.appendChild(flag);
-    loc.appendChild(place);
-    head.appendChild(loc);
 
     var quote = document.createElement("p");
     quote.className = "quote";
     quote.textContent = "“" + item.quote + "”";
 
-    card.appendChild(head);
+    card.appendChild(name);
     card.appendChild(quote);
     return card;
   }
