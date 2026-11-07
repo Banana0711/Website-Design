@@ -45,6 +45,29 @@
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.9'/></svg>");
   }
 
+  /* 左上角校徽：固定层级高于卡片墙与渐隐层，滚动时不会被遮挡 */
+  .brand {
+    position: fixed;
+    top: 22px;
+    left: 24px;
+    z-index: 10;
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .78);
+    border: 1px solid rgba(255, 255, 255, .95);
+    box-shadow: 0 10px 26px rgba(0, 60, 120, .2);
+    backdrop-filter: blur(6px);
+  }
+
+  .brand img {
+    width: 72px;
+    height: 72px;
+    display: block;
+  }
+
   /* WebGL 海浪背景，铺在渐变底层之上、卡片墙之下 */
   #bg-canvas {
     position: fixed;
@@ -190,6 +213,8 @@
   }
 
   @media (max-width: 640px) {
+    .brand { width: 58px; height: 58px; top: 14px; left: 14px; }
+    .brand img { width: 42px; height: 42px; }
     .wall { scale: .9; }
     .col:nth-child(n + 3) { display: none; }
     .col { width: 78vw; }
@@ -200,6 +225,9 @@
 </head>
 <body>
   <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <a class="brand" href="index.html" aria-label="河海大学">
+    <img src="assets/img/emblem.png" alt="河海大学校徽">
+  </a>
   <main class="stage">
     <div class="wall" id="wall" aria-label="河海大学证言墙"></div>
   </main>
