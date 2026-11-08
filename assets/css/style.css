@@ -338,9 +338,6 @@ body.is-revealed .intro-video { opacity: 1; }
   pointer-events: none;
   opacity: 0;
   transition: opacity .7s var(--ease);
-  /* 提前提升为合成层，避免渐显瞬间整帧光栅化造成卡顿 */
-  will-change: opacity;
-  transform: translateZ(0);
 }
 .intro-still img {
   width: 100%; height: 100%;
