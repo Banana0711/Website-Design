@@ -338,6 +338,9 @@ body.is-revealed .intro-video { opacity: 1; }
   pointer-events: none;
   opacity: 0;
   transition: opacity .7s var(--ease);
+  /* 提前提升为合成层，避免渐显瞬间整帧光栅化造成卡顿 */
+  will-change: opacity;
+  transform: translateZ(0);
 }
 .intro-still img {
   width: 100%; height: 100%;
@@ -614,8 +617,8 @@ body.is-revealed .intro-plaza { opacity: 1; }
   border-radius: 50%;
   background: radial-gradient(ellipse at center, rgba(160, 220, 240, 0) 58%, rgba(160, 220, 240, .06) 74%, transparent 86%);
   box-shadow:
-    0 0 18px rgba(150, 205, 230, .40),
-    inset 0 0 26px rgba(150, 205, 230, .38);
+    0 0 10px rgba(150, 205, 230, .3),
+    inset 0 0 14px rgba(150, 205, 230, .26);
   opacity: 0;
   transform: scale(.22);
 }
@@ -658,23 +661,20 @@ body.is-revealed .intro-plaza span {
 }
 body.is-revealed .intro-wordmark { opacity: 1; }
 
-/* Belgrade Arbor 式文字入场：逐字上浮 + 去模糊，45ms 错峰 */
+/* Belgrade Arbor 式文字入场：逐字上浮，45ms 错峰（改为纯位移，去掉大字号模糊滤镜以消除收尾卡顿） */
 .intro-wordmark .ch {
   display: inline-block;
   opacity: 0;
   transform: translateY(2rem);
-  filter: blur(4px);
   transition:
     opacity .7s var(--ease-power),
-    transform .7s var(--ease-power),
-    filter .7s var(--ease-power);
+    transform .7s var(--ease-power);
   transition-delay: calc(750ms + var(--i, 0) * 45ms);
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
 }
 body.is-revealed .intro-wordmark .ch {
   opacity: 1;
   transform: translateY(0);
-  filter: blur(0);
 }
 .intro-wordmark .wd {
   display: inline-block;
@@ -2253,7 +2253,6 @@ body.at-map .panel-guestbook { visibility: hidden; }
   .intro-wordmark .ch { opacity: 1; transform: none; filter: none; transition: none; }
   .intro-clouds i { animation: none; }
   .intro-video { transition-duration: .01ms; }
-  .intro-still { transition-duration: .01ms; }
   .intro-plaza { transition-delay: 0s; }
   .intro-camera, .intro-sketch, .intro-relief, .intro-photo .ink, .intro-inkblots i, .intro-grade { transition-duration: .01ms; }
   .intro-plaza span { animation: none; opacity: 0; }

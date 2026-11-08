@@ -65,6 +65,12 @@
   var introTimers = [];
   var introReplayArmed = false;
 
+  /* 预解码收官实景照片，避免渐显瞬间首次解码造成卡顿 */
+  var introStillImg = document.querySelector('.intro-still img');
+  if (introStillImg && introStillImg.decode) {
+    introStillImg.decode().catch(function () {});
+  }
+
   /* 标题逐字拆分：Belgrade Arbor 式入场，每个字符独立上浮 + 去模糊 */
   (function splitWordmark() {
     var wm = document.querySelector('.intro-wordmark');
@@ -137,7 +143,10 @@
         introVideo.addEventListener('canplay', ready, { once: true });
         introVideo.addEventListener('loadeddata', ready, { once: true });
         introVideo.addEventListener('error', ready, { once: true });
-        try { introVideo.load(); } catch (e) {}
+        /* 仅在尚未开始加载时主动 load，避免打断浏览器已有的预载请求 */
+        if (introVideo.networkState === 0) {
+          try { introVideo.load(); } catch (e) {}
+        }
       }
     } else {
       done = true;
@@ -208,7 +217,10 @@
 
       var end = function () { finishIntro(); };
       v.addEventListener('ended', end, { once: true });
-      v.addEventListener('error', end, { once: true });
+      v.addEventListener('error', function () {
+        /* 仅在真实媒体错误时提前收尾，忽略可恢复的请求中止 */
+        if (v.error) end();
+      }, { once: true });
 
       var p = v.play();
       if (p && p.catch) {
