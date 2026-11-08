@@ -721,9 +721,11 @@ body.is-revealed .intro-meta { opacity: 1; }
 .journey-sticky {
   position: sticky;
   top: 0;
+  /* 先按小视口给值，再用 vh 兜底：部分浏览器 svh 在缩放/移动端会算得过小，导致吸顶区只有半屏 */
   height: 100svh;
+  height: 100vh;
   overflow: hidden;
-  background: var(--ink);
+  background: linear-gradient(180deg, #0b2434 0%, #103041 38%, #14405a 66%, #0d2a39 100%);
   isolation: isolate;
 }
 
