@@ -63,6 +63,7 @@
 
   var introVideo = document.getElementById('introVideo');
   var introTimers = [];
+  var introReplayArmed = false;
 
   /* 标题逐字拆分：Belgrade Arbor 式入场，每个字符独立上浮 + 去模糊 */
   (function splitWordmark() {
@@ -105,6 +106,7 @@
     }
     document.body.classList.remove('is-playing');
     document.body.classList.add('is-revealed');
+    introReplayArmed = true;
   }
 
   /* 开场数字加载进度：预载开屏素材，进度缓动到 100 后淡出并启动开场 */
@@ -225,6 +227,45 @@
     }
 
     runIntroLoader(startIntro);
+  }
+
+  /* ---------------------------------------------------------
+     回到首屏时重播开场视频
+     （离开首屏（滚过一屏）后再回到顶部，视频从头重播一次）
+     --------------------------------------------------------- */
+  if (!params.has('phase') && introVideo) {
+    var introSec = document.getElementById('intro');
+    var introOut = false;
+
+    function replayIntro() {
+      if (document.body.classList.contains('is-playing')) return;
+      var v = introVideo;
+      document.body.classList.remove('is-revealed');
+      document.body.classList.add('is-playing');
+      try { v.currentTime = 0; } catch (e) {}
+      var p = v.play();
+      if (p && p.catch) {
+        p.catch(function () { finishIntro(); });
+      }
+      v.addEventListener('ended', finishIntro, { once: true });
+      introTimers.push(window.setTimeout(function () {
+        if (!v.ended) finishIntro();
+      }, 16000));
+    }
+
+    if (introSec) {
+      window.addEventListener('scroll', function () {
+        var y = window.scrollY || window.pageYOffset;
+        var h = introSec.offsetHeight || window.innerHeight;
+        /* 滚过首屏约 3/4 记为“已离开”，回到顶部再重播 */
+        if (y > Math.max(120, h * .75)) {
+          introOut = true;
+        } else if (y < 24 && introOut && introReplayArmed) {
+          introOut = false;
+          replayIntro();
+        }
+      }, { passive: true });
+    }
   }
 
   /* ---------------------------------------------------------
