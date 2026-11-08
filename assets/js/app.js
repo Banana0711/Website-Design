@@ -68,7 +68,7 @@
   /* 标题逐字拆分：Belgrade Arbor 式入场，每个字符独立上浮 + 去模糊 */
   (function splitWordmark() {
     var wm = document.querySelector('.intro-wordmark');
-    if (!wm || prefersReduced || wm.querySelector('.ch')) return;
+    if (!wm || wm.querySelector('.ch')) return;
     var text = wm.textContent.trim();
     if (!text) return;
     wm.setAttribute('aria-label', text);
@@ -195,8 +195,6 @@
       hideIntroLoader();
       document.body.classList.add('is-playing');
     }
-  } else if (prefersReduced) {
-    finishIntro();
   } else {
     var introStarted = false;
 
